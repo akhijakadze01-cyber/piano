@@ -3,7 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>სოლფეჯიო • ოქტავები & მუსიკალური სისტემა</title>
+  <title>სოლფეჯიო • პირადი პროფილი & ტრენაჟორი</title>
+  
+  <!-- Firebase SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-auth-compat.js"></script>
+
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
     body {
@@ -18,9 +23,111 @@
       min-height: 100vh;
       overflow-x: hidden;
     }
-    .header {
+
+    /* ავტორიზაციის ფანჯარა */
+    .auth-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: #0f172a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      padding: 16px;
+    }
+    .auth-card {
+      background: white;
+      width: 100%;
+      max-width: 400px;
+      border-radius: 20px;
+      padding: 26px 20px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+      text-align: center;
+    }
+    .auth-card h2 {
+      margin: 0 0 8px 0;
+      color: #1e3a8a;
+      font-size: 1.4rem;
+    }
+    .auth-card p {
+      margin: 0 0 20px 0;
+      color: #64748b;
+      font-size: 0.9rem;
+    }
+    .auth-input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 12px;
+      border: 1.5px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      outline: none;
+    }
+    .auth-input:focus {
+      border-color: #1e3a8a;
+    }
+    .auth-btn-primary {
+      width: 100%;
+      background: #1e3a8a;
+      color: white;
+      border: none;
+      padding: 13px;
+      font-size: 1rem;
+      font-weight: bold;
+      border-radius: 10px;
+      cursor: pointer;
+      margin-top: 6px;
+    }
+    .auth-toggle-link {
+      margin-top: 14px;
+      font-size: 0.88rem;
+      color: #0284c7;
+      cursor: pointer;
+      font-weight: 600;
+      display: inline-block;
+    }
+    .auth-error {
+      color: #dc2626;
+      font-size: 0.85rem;
+      margin-top: 10px;
+      min-height: 20px;
+    }
+
+    /* მთავარი აპლიკაციის გარსი */
+    .app-wrapper {
+      display: none;
       width: 100%;
       max-width: 520px;
+      flex-direction: column;
+      align-items: center;
+    }
+    .user-bar {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: #e2e8f0;
+      padding: 6px 12px;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      font-size: 0.82rem;
+    }
+    .logout-btn {
+      background: #ef4444;
+      color: white;
+      border: none;
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 0.78rem;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .header {
+      width: 100%;
       display: flex;
       justify-content: space-between;
       align-items: center;
@@ -66,7 +173,6 @@
 
     .level-container {
       width: 100%;
-      max-width: 520px;
       display: flex;
       align-items: center;
       gap: 8px;
@@ -96,7 +202,6 @@
 
     .clef-selector {
       width: 100%;
-      max-width: 520px;
       display: flex;
       gap: 6px;
       margin-bottom: 6px;
@@ -120,7 +225,6 @@
 
     .staff-container {
       width: 100%;
-      max-width: 520px;
       background: #fffefb;
       border: 1.5px solid #e2e8f0;
       border-radius: 16px;
@@ -135,7 +239,7 @@
     canvas#staff {
       width: 100%;
       max-width: 500px;
-      height: 230px;
+      height: 220px;
     }
     canvas#confetti {
       position: absolute;
@@ -147,7 +251,6 @@
       border-radius: 16px;
     }
 
-    /* აქტიური ოქტავისა და მუსიკალური ნიშნების პანელი სანოტო სისტემის თავზე */
     .meta-indicators {
       width: 100%;
       display: flex;
@@ -163,7 +266,6 @@
 
     #explanation-box {
       width: 100%;
-      max-width: 520px;
       min-height: 52px;
       margin: 6px 0;
       padding: 6px 12px;
@@ -184,13 +286,10 @@
 
     .controls {
       width: 100%;
-      max-width: 520px;
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
-
-    /* ალტერაციის ნიშნები */
     .accidental-bar {
       display: flex;
       gap: 5px;
@@ -237,7 +336,7 @@
       background: #0284c7;
     }
 
-    /* მოდალური ფანჯარა */
+    /* თეორიის მოდალი */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -247,7 +346,7 @@
       height: 100%;
       background: rgba(15, 23, 42, 0.6);
       backdrop-filter: blur(3px);
-      z-index: 100;
+      z-index: 1100;
       justify-content: center;
       align-items: center;
       padding: 12px;
@@ -255,7 +354,7 @@
     .modal-content {
       background: white;
       width: 100%;
-      max-width: 540px;
+      max-width: 520px;
       max-height: 85vh;
       border-radius: 16px;
       display: flex;
@@ -286,7 +385,6 @@
       font-size: 0.88rem;
       line-height: 1.45;
       color: #334155;
-      user-select: text;
     }
     .theory-box {
       background: #f8fafc;
@@ -303,79 +401,191 @@
 </head>
 <body>
 
-  <div class="header">
-    <div class="title">სოლფეჯიო • სრული სისტემა</div>
-    <div class="stats-row">
-      <button class="theory-btn" onclick="openTheoryModal()">📖 თეორია</button>
-      <div class="streak-badge" id="streak-box">🔥 <span id="streak-num">0</span></div>
-      <div class="score-badge" id="score-text">0 / 0</div>
+  <!-- ავტორიზაციის ფანჯარა -->
+  <div class="auth-overlay" id="auth-overlay">
+    <div class="auth-card">
+      <h2 id="auth-title">შესვლა</h2>
+      <p id="auth-desc">გაიარეთ ავტორიზაცია სოლფეჯიოს სივრცეში შესასვლელად</p>
+      
+      <input type="email" class="auth-input" id="auth-email" placeholder="ელ.ფოსტა (მაგ: friend@gmail.com)">
+      <input type="password" class="auth-input" id="auth-pass" placeholder="პაროლი (მინ. 6 სიმბოლო)">
+      
+      <button class="auth-btn-primary" id="auth-submit-btn" onclick="handleAuth()">შესვლა</button>
+      
+      <div class="auth-toggle-link" id="auth-toggle" onclick="toggleAuthMode()">არ გაქვთ ანგარიში? დარეგისტრირდით</div>
+      <div class="auth-error" id="auth-error"></div>
     </div>
   </div>
 
-  <div class="level-container">
-    <span class="level-label">საფეხური:</span>
-    <select class="level-select" id="level-select" onchange="onLevelChange(this.value)">
-      <option value="1">I კლასი (მხოლოდ I ოქტავა, ნიშნების გარეშე)</option>
-      <option value="2">II – IV კლასი (ვიოლინო/ბანი, მცირე & I ოქტავა, ♯/♭)</option>
-      <option value="3">V – VII კლასი (დიდი, მცირე, I, II ოქტავები, დამატებითი ხაზები)</option>
-      <option value="4" selected>კონსერვატორია (სრული ოქტავები + დუბლ-ალტერაცია & არტიკულაცია)</option>
-    </select>
-  </div>
-
-  <div class="clef-selector" id="clef-selector-box">
-    <button class="clef-btn active" id="btn-treble" onclick="setClefMode('treble')">𝄞 ვიოლინო</button>
-    <button class="clef-btn" id="btn-bass" onclick="setClefMode('bass')">𝄢 ბანი</button>
-    <button class="clef-btn" id="btn-mixed" onclick="setClefMode('mixed')">𝄢 + 𝄞 შერეული</button>
-  </div>
-
-  <div class="staff-container">
-    <div class="meta-indicators">
-      <span id="target-octave-tag">ოქტავა: I ოქტავა</span>
-      <span id="target-art-tag">არტიკულაცია: ჩვეულებრივი</span>
-    </div>
-    <canvas id="staff" width="1000" height="460"></canvas>
-    <canvas id="confetti" width="500" height="230"></canvas>
-  </div>
-
-  <div id="explanation-box">
-    <div class="status-line" style="color: #475569;">ამოიცანით ნოტა:</div>
-  </div>
-
-  <div class="controls">
-    <div class="accidental-bar" id="accidental-bar">
-      <button class="acc-btn selected" id="acc-natural" onclick="selectAccidental('')">♮ სუფთა</button>
-      <button class="acc-btn" id="acc-sharp" onclick="selectAccidental('♯')">♯ დიეზი</button>
-      <button class="acc-btn" id="acc-flat" onclick="selectAccidental('♭')">♭ ბემოლი</button>
-      <button class="acc-btn" id="acc-doublesharp" onclick="selectAccidental('𝄪')">𝄪 დუბლ-♯</button>
-      <button class="acc-btn" id="acc-doubleflat" onclick="selectAccidental('𝄫')">𝄫 დუბლ-♭</button>
+  <!-- მთავარი აპლიკაცია -->
+  <div class="app-wrapper" id="app-wrapper">
+    <div class="user-bar">
+      <span>👤 <b id="user-display-email">user@mail.com</b></span>
+      <button class="logout-btn" onclick="handleLogout()">გასვლა</button>
     </div>
 
-    <div class="notes-grid">
-      <button class="note-btn" onclick="submitAnswer('დო')">დო</button>
-      <button class="note-btn" onclick="submitAnswer('რე')">რე</button>
-      <button class="note-btn" onclick="submitAnswer('მი')">მი</button>
-      <button class="note-btn" onclick="submitAnswer('ფა')">ფა</button>
-      <button class="note-btn" onclick="submitAnswer('სოლ')">სოლ</button>
-      <button class="note-btn" onclick="submitAnswer('ლა')">ლა</button>
-      <button class="note-btn" onclick="submitAnswer('სი')">სი</button>
-      <button class="note-btn sound-btn" onclick="playCurrentTone()">♫ მოსმენა</button>
+    <div class="header">
+      <div class="title">სოლფეჯიო • ტრენაჟორი</div>
+      <div class="stats-row">
+        <button class="theory-btn" onclick="openTheoryModal()">📖 თეორია</button>
+        <div class="streak-badge" id="streak-box">🔥 <span id="streak-num">0</span></div>
+        <div class="score-badge" id="score-text">0 / 0</div>
+      </div>
+    </div>
+
+    <div class="level-container">
+      <span class="level-label">საფეხური:</span>
+      <select class="level-select" id="level-select" onchange="onLevelChange(this.value)">
+        <option value="1">I კლასი (მხოლოდ I ოქტავა, ნიშნების გარეშე)</option>
+        <option value="2">II – IV კლასი (ვიოლინო/ბანი, მცირე & I ოქტავა, ♯/♭)</option>
+        <option value="3">V – VII კლასი (დიდი, მცირე, I, II ოქტავები, დამატებითი ხაზები)</option>
+        <option value="4" selected>კონსერვატორია (სრული ოქტავები + დუბლ-ალტერაცია & არტიკულაცია)</option>
+      </select>
+    </div>
+
+    <div class="clef-selector" id="clef-selector-box">
+      <button class="clef-btn active" id="btn-treble" onclick="setClefMode('treble')">𝄞 ვიოლინო</button>
+      <button class="clef-btn" id="btn-bass" onclick="setClefMode('bass')">𝄢 ბანი</button>
+      <button class="clef-btn" id="btn-mixed" onclick="setClefMode('mixed')">𝄢 + 𝄞 შერეული</button>
+    </div>
+
+    <div class="staff-container">
+      <div class="meta-indicators">
+        <span id="target-octave-tag">ოქტავა: I ოქტავა</span>
+        <span id="target-art-tag">არტიკულაცია: ჩვეულებრივი</span>
+      </div>
+      <canvas id="staff" width="1000" height="440"></canvas>
+      <canvas id="confetti" width="500" height="220"></canvas>
+    </div>
+
+    <div id="explanation-box">
+      <div class="status-line" style="color: #475569;">ამოიცანით ნოტა:</div>
+    </div>
+
+    <div class="controls">
+      <div class="accidental-bar" id="accidental-bar">
+        <button class="acc-btn selected" id="acc-natural" onclick="selectAccidental('')">♮ სუფთა</button>
+        <button class="acc-btn" id="acc-sharp" onclick="selectAccidental('♯')">♯ დიეზი</button>
+        <button class="acc-btn" id="acc-flat" onclick="selectAccidental('♭')">♭ ბემოლი</button>
+        <button class="acc-btn" id="acc-doublesharp" onclick="selectAccidental('𝄪')">𝄪 დუბლ-♯</button>
+        <button class="acc-btn" id="acc-doubleflat" onclick="selectAccidental('𝄫')">𝄫 დუბლ-♭</button>
+      </div>
+
+      <div class="notes-grid">
+        <button class="note-btn" onclick="submitAnswer('დო')">დო</button>
+        <button class="note-btn" onclick="submitAnswer('რე')">რე</button>
+        <button class="note-btn" onclick="submitAnswer('მი')">მი</button>
+        <button class="note-btn" onclick="submitAnswer('ფა')">ფა</button>
+        <button class="note-btn" onclick="submitAnswer('სოლ')">სოლ</button>
+        <button class="note-btn" onclick="submitAnswer('ლა')">ლა</button>
+        <button class="note-btn" onclick="submitAnswer('სი')">სი</button>
+        <button class="note-btn sound-btn" onclick="playCurrentTone()">♫ მოსმენა</button>
+      </div>
     </div>
   </div>
 
-  <!-- თეორიის მოდალური ფანჯარა -->
-  <div class="modal-overlay" id="theory-modal" onclick="closeTheoryModal(event)">
+  <!-- თეორიის მოდალი -->
+  <div class="modal-overlay" id="theory-modal" onclick="closeTheoryModal()">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <div class="modal-title" id="theory-title">სოლფეჯიოს სრული აკადემიური თეორია</div>
+        <div class="modal-title">სოლფეჯიოს სრული თეორია</div>
         <button class="close-btn" onclick="closeTheoryModal()">&times;</button>
       </div>
-      <div class="modal-body" id="theory-body">
-        <!-- ივსება დინამიკურად -->
+      <div class="modal-body">
+        <div class="theory-box">
+          <h4>1. ოქტავების სისტემა</h4>
+          ბგერათრიგი იყოფა რეგისტრებად: <b>სუბკონტროქტავა, კონტროქტავა, დიდი, მცირე, პირველი (I), მეორე (II), მესამე (III), მეოთხე (IV)</b>.<br>
+          • <b>𝄞 ვიოლინოს გასაღები:</b> ძირითადად I, II და III ოქტავები.<br>
+          • <b>𝄢 ბანის გასაღები:</b> დიდი, მცირე და I ოქტავის დასაწყისი.
+        </div>
+        <div class="theory-box">
+          <h4>2. ტაქტი და ზომა</h4>
+          • <b>ტაქტი:</b> მანძილი ერთი ძლიერი წილიდან მომდევნო ძლიერ წილამდე.<br>
+          • <b>ზომა (4/4, 3/4, 2/4):</b> ზედა ციფრი განსაზღვრავს წილების რაოდენობას, ქვედა — მათ გრძლიობას.
+        </div>
+        <div class="theory-box">
+          <h4>3. არტიკულაცია</h4>
+          • <b>ლეგატო:</b> შეკრული, გადაბმული ჟღერადობა (ლიგა).<br>
+          • <b>სტაკატო:</b> მოწყვეტილი, მოკლე შესრულება (წერტილი).<br>
+          • <b>აქცენტი (>):</b> მკვეთრი დარტყმა.<br>
+          • <b>ფერმატა:</b> ბგერის გაჩერება/გაგრძელება.
+        </div>
       </div>
     </div>
   </div>
 
   <script>
+    // თქვენი სქრინშოტიდან ჩასმული ზუსტი კონფიგურაცია
+    const firebaseConfig = {
+      apiKey: "AIzaSyA2lrjOW8TeswftptplsjLeBZKsmFC3VYM",
+      authDomain: "ani5101028311.firebaseapp.com",
+      projectId: "ani5101028311",
+      storageBucket: "ani5101028311.firebasestorage.app",
+      messagingSenderId: "447619263954",
+      appId: "1:447619263954:web:c5042d05328c3b524d6c0b"
+    };
+
+    if (!firebase.apps.length) {
+      firebase.initializeApp(firebaseConfig);
+    }
+    const auth = firebase.auth();
+
+    let isRegisterMode = false;
+
+    function toggleAuthMode() {
+      isRegisterMode = !isRegisterMode;
+      document.getElementById('auth-title').textContent = isRegisterMode ? 'რეგისტრაცია' : 'შესვლა';
+      document.getElementById('auth-desc').textContent = isRegisterMode ? 'შექმენით ანგარიში სოლფეჯიოს სავარჯიშოდ' : 'გაიარეთ ავტორიზაცია სოლფეჯიოს სივრცეში შესასვლელად';
+      document.getElementById('auth-submit-btn').textContent = isRegisterMode ? 'რეგისტრაცია' : 'შესვლა';
+      document.getElementById('auth-toggle').textContent = isRegisterMode ? 'უკვე გაქვთ ანგარიში? შესვლა' : 'არ გაქვთ ანგარიში? დარეგისტრირდით';
+      document.getElementById('auth-error').textContent = '';
+    }
+
+    async function handleAuth() {
+      const email = document.getElementById('auth-email').value.trim();
+      const pass = document.getElementById('auth-pass').value;
+      const errBox = document.getElementById('auth-error');
+      errBox.textContent = '';
+
+      if (!email || !pass) {
+        errBox.textContent = 'გთხოვთ შეიყვანოთ მეილი და პაროლი!';
+        return;
+      }
+
+      try {
+        if (isRegisterMode) {
+          await auth.createUserWithEmailAndPassword(email, pass);
+        } else {
+          await auth.signInWithEmailAndPassword(email, pass);
+        }
+      } catch (err) {
+        let msg = err.message;
+        if (err.code === 'auth/invalid-email') msg = 'არასწორი ელ.ფოსტის ფორმატი!';
+        if (err.code === 'auth/user-not-found') msg = 'მომხმარებელი ვერ მოიძებნა!';
+        if (err.code === 'auth/wrong-password') msg = 'პაროლი არასწორია!';
+        if (err.code === 'auth/weak-password') msg = 'პაროლი უნდა იყოს მინიმუმ 6 სიმბოლო!';
+        if (err.code === 'auth/email-already-in-use') msg = 'ეს ელ.ფოსტა უკვე დარეგისტრირებულია!';
+        errBox.textContent = msg;
+      }
+    }
+
+    function handleLogout() {
+      auth.signOut();
+    }
+
+    auth.onAuthStateChanged(user => {
+      if (user) {
+        document.getElementById('auth-overlay').style.display = 'none';
+        document.getElementById('app-wrapper').style.display = 'flex';
+        document.getElementById('user-display-email').textContent = user.email;
+        onLevelChange(document.getElementById('level-select').value);
+      } else {
+        document.getElementById('auth-overlay').style.display = 'flex';
+        document.getElementById('app-wrapper').style.display = 'none';
+      }
+    });
+
+    // ================= სოლფეჯიოს ძრავი =================
     let audioCtx = null;
     function getAudioContext() {
       if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -393,15 +603,9 @@
 
         let dur = 1.1;
         let peakGain = 0.35;
-
-        if (articulation === 'staccato') {
-          dur = 0.22; // მოკლე, მოწყვეტილი
-          peakGain = 0.45;
-        } else if (articulation === 'accent') {
-          peakGain = 0.6; // მძლავრი შეტევა
-        } else if (articulation === 'fermata') {
-          dur = 2.4; // გაჩერებული, გაგრძელებული
-        }
+        if (articulation === 'staccato') { dur = 0.22; peakGain = 0.45; }
+        else if (articulation === 'accent') { peakGain = 0.6; }
+        else if (articulation === 'fermata') { dur = 2.4; }
 
         gain.gain.setValueAtTime(peakGain, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
@@ -432,7 +636,6 @@
 
     const accidentalSemitones = { '': 0, '♯': 1, '♭': -1, '𝄪': 2, '𝄫': -2 };
 
-    // ვიოლინოს გასაღების ბაზა (ოქტავების ზუსტი მითითებით)
     const trebleAll = [
       { name: 'სოლ', baseFreq: 196.00, offset: -5, ledgers: [-4, -2], octave: 'მცირე ოქტავა', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
       { name: 'ლა',  baseFreq: 220.00, offset: -4, ledgers: [-4, -2], octave: 'მცირე ოქტავა', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
@@ -454,7 +657,6 @@
       { name: 'დო',  baseFreq: 1046.5, offset: 12, ledgers: [10, 12], octave: 'III ოქტავა', lineDesc: 'ზედა მე-2 დამატებით ხაზზე', minLevel: 4 }
     ];
 
-    // ბანის გასაღების ბაზა
     const bassAll = [
       { name: 'დო',  baseFreq: 65.41,  offset: -4, ledgers: [-4, -2], octave: 'დიდი ოქტავა', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
       { name: 'რე',  baseFreq: 73.42,  offset: -3, ledgers: [-2], octave: 'დიდი ოქტავა', lineDesc: 'ქვედა 1-ელ დამატებით ხაზს ქვემოთ', minLevel: 4 },
@@ -495,53 +697,8 @@
     const streakNum = document.getElementById('streak-num');
     const accidentalBar = document.getElementById('accidental-bar');
 
-    const theoryDataFull = {
-      title: "აკადემიური მუსიკალური თეორია (კონსერვატორიის პროგრამა)",
-      html: `
-        <div class="theory-box">
-          <h4>1. ოქტავების სისტემა და რეგისტრები</h4>
-          ფორტეპიანოს სრული ბგერათრიგი იყოფა 9 ოქტავად (დაბლიდან მაღლისკენ):<br>
-          <b>სუბკონტროქტავა $\rightarrow$ კონტროქტავა $\rightarrow$ დიდი ოქტავა $\rightarrow$ მცირე ოქტავა $\rightarrow$ პირველი (I) ოქტავა $\rightarrow$ მეორე (II) $\rightarrow$ მესამე (III) $\rightarrow$ მეოთხე (IV) $\rightarrow$ მეხუთე (V) ოქტავა</b>.<br>
-          • <b>ვიოლინოს გასაღები (𝄞):</b> ძირითადად მოიცავს I, II და III ოქტავებს.<br>
-          • <b>ბანის გასაღები (𝄢):</b> მოიცავს დიდ, მცირე და I ოქტავის დასაწყისს.
-        </div>
-
-        <div class="theory-box">
-          <h4>2. ტაქტი, ტაქტის ხაზი და ზომა</h4>
-          • <b>ტაქტი:</b> მანძილი ერთი ძლიერი წილიდან მომდევნო ძლიერ წილამდე.<br>
-          • <b>ტაქტის ხაზი:</b> ვერტიკალური გამყოფი ხაზი ხუთხაზიან სისტემაზე.<br>
-          • <b>ზომა (მაგ: 2/4, 3/4, 4/4):</b> ზედა ციფრი გვიჩვენებს წილების რაოდენობას ტაქტში, ქვედა — თითოეული წილის გრძლიობას.
-        </div>
-
-        <div class="theory-box">
-          <h4>3. არტიკულაციის ნიშნები</h4>
-          • <b>ლეგატო (Legato):</b> შეკრული, გადაბმული შესრულება წყვეტის გარეშე (აღინიშნება რკალით - ლიგით).<br>
-          • <b>სტაკატო (Staccato):</b> მოწყვეტილი, მოკლე შესრულება (აღინიშნება წერტილით $\\cdot$ ნოტის თავზე).<br>
-          • <b>აქცენტი ($>$):</b> ბგერის გამოკვეთილი, ძლიერი შეტევა.<br>
-          • <b>ტენუტო ($-$):</b> ბგერის ზუსტი, მყარი შენარჩუნება სრული ხანგრძლივობით.<br>
-          • <b>ფერმატა (𝄐):</b> ნოტის ან პაუზის გაჩერება/გაგრძელება შემსრულებლის შეხედულებისამებრ.
-        </div>
-
-        <div class="theory-box">
-          <h4>4. ალტერაციის სრული სისტემა</h4>
-          • <b>დიეზი (♯):</b> ამაღლება ნახევარი ტონით.<br>
-          • <b>ბემოლი (♭):</b> დადაბლება ნახევარი ტონით.<br>
-          • <b>დუბლ-დიეზი (𝄪):</b> ამაღლება 1 მთელი ტონით (2 ნახევარტონით).<br>
-          • <b>დუბლ-ბემოლი (𝄫):</b> დადაბლება 1 მთელი ტონით.<br>
-          • <b>ბეკარი (♮):</b> ალტერაციის გაუქმება.
-        </div>
-      `
-    };
-
-    function openTheoryModal() {
-      document.getElementById('theory-title').textContent = theoryDataFull.title;
-      document.getElementById('theory-body').innerHTML = theoryDataFull.html;
-      document.getElementById('theory-modal').style.display = 'flex';
-    }
-
-    function closeTheoryModal() {
-      document.getElementById('theory-modal').style.display = 'none';
-    }
+    function openTheoryModal() { document.getElementById('theory-modal').style.display = 'flex'; }
+    function closeTheoryModal() { document.getElementById('theory-modal').style.display = 'none'; }
 
     let particles = [];
     function launchSparks() {
@@ -637,7 +794,6 @@
       const centerY = canvas.height / 2;
       const spacing = 34;
 
-      // 5 ძირითადი ხაზი
       ctx.lineWidth = 3;
       ctx.strokeStyle = '#334155';
       for (let i = -2; i <= 2; i++) {
@@ -648,7 +804,6 @@
         ctx.stroke();
       }
 
-      // გასაღები
       ctx.save();
       ctx.fillStyle = '#0f172a';
       if (activeClef === 'treble') {
@@ -660,7 +815,6 @@
       }
       ctx.restore();
 
-      // ტაქტის ზომა (4/4)
       ctx.save();
       ctx.font = 'bold 38px serif';
       ctx.fillStyle = '#1e293b';
@@ -669,7 +823,6 @@
       ctx.fillText('4', 145, centerY + 28);
       ctx.restore();
 
-      // ტაქტის ხაზები
       ctx.lineWidth = 3;
       ctx.strokeStyle = '#64748b';
       ctx.beginPath();
@@ -677,7 +830,6 @@
       ctx.lineTo(175, centerY + 2 * spacing);
       ctx.stroke();
 
-      // მარჯვენა დასკვნითი ორმაგი ტაქტის ხაზი
       ctx.beginPath();
       ctx.moveTo(canvas.width - 45, centerY - 2 * spacing);
       ctx.lineTo(canvas.width - 45, centerY + 2 * spacing);
@@ -694,7 +846,6 @@
       const baseLine1Y = centerY + (2 * spacing);
       const noteY = baseLine1Y - (currentQuestion.offset * (spacing / 2));
 
-      // დამატებითი ხაზები
       if (currentQuestion.ledgers && currentQuestion.ledgers.length > 0) {
         ctx.lineWidth = 3.5;
         ctx.strokeStyle = '#334155';
@@ -707,7 +858,6 @@
         });
       }
 
-      // ალტერაციის ნიშანი
       if (currentQuestion.accidental !== '') {
         ctx.save();
         ctx.fillStyle = '#b91c1c';
@@ -718,7 +868,6 @@
         ctx.restore();
       }
 
-      // ნოტის თავაკი
       ctx.save();
       ctx.translate(noteX, noteY);
       ctx.rotate(-0.35);
@@ -728,7 +877,6 @@
       ctx.fill();
       ctx.restore();
 
-      // ნოტის ჯოხი (Stem)
       ctx.lineWidth = 3.5;
       ctx.strokeStyle = '#1e3a8a';
       ctx.beginPath();
@@ -742,20 +890,17 @@
       }
       ctx.stroke();
 
-      // არტიკულაციის დახატვა
       ctx.save();
       ctx.fillStyle = '#ea580c';
       ctx.strokeStyle = '#ea580c';
       ctx.lineWidth = 3;
 
       if (currentQuestion.articulation === 'staccato') {
-        // წერტილი ნოტის თავზე/ქვეშ
         let dotY = stemUp ? noteY + 28 : noteY - 28;
         ctx.beginPath();
         ctx.arc(noteX, dotY, 4.5, 0, 2 * Math.PI);
         ctx.fill();
       } else if (currentQuestion.articulation === 'accent') {
-        // აქცენტის ნიშანი >
         let accY = stemUp ? noteY + 28 : noteY - 32;
         ctx.beginPath();
         ctx.moveTo(noteX - 14, accY - 6);
@@ -763,13 +908,11 @@
         ctx.lineTo(noteX - 14, accY + 6);
         ctx.stroke();
       } else if (currentQuestion.articulation === 'legato') {
-        // ლეგატოს ლიგა
         ctx.beginPath();
         let arcY = stemUp ? noteY + 26 : noteY - 26;
         ctx.arc(noteX, arcY, 32, stemUp ? Math.PI * 0.15 : Math.PI * 1.15, stemUp ? Math.PI * 0.85 : Math.PI * 1.85);
         ctx.stroke();
       } else if (currentQuestion.articulation === 'fermata') {
-        // ფერმატა 𝄐
         ctx.font = '46px serif';
         ctx.textAlign = 'center';
         ctx.fillText('𝄐', noteX, centerY - 2.8 * spacing);
@@ -799,17 +942,11 @@
       const noteBase = pool[Math.floor(Math.random() * pool.length)];
 
       let acc = '';
-      if (currentLevel === 1) {
-        acc = '';
-      } else if (currentLevel === 2) {
-        acc = Math.random() > 0.6 ? (Math.random() > 0.5 ? '♯' : '♭') : '';
-      } else if (currentLevel === 3) {
-        acc = Math.random() > 0.5 ? ['♯', '♭'][Math.floor(Math.random() * 2)] : '';
-      } else {
-        acc = Math.random() > 0.45 ? ['♯', '♭', '𝄪', '𝄫'][Math.floor(Math.random() * 4)] : '';
-      }
+      if (currentLevel === 1) acc = '';
+      else if (currentLevel === 2) acc = Math.random() > 0.6 ? (Math.random() > 0.5 ? '♯' : '♭') : '';
+      else if (currentLevel === 3) acc = Math.random() > 0.5 ? ['♯', '♭'][Math.floor(Math.random() * 2)] : '';
+      else acc = Math.random() > 0.45 ? ['♯', '♭', '𝄪', '𝄫'][Math.floor(Math.random() * 4)] : '';
 
-      // არტიკულაცია (დონე 3 და 4-ზე)
       let art = 'normal';
       if (currentLevel >= 3 && Math.random() > 0.4) {
         art = articulationsList[Math.floor(Math.random() * articulationsList.length)];
@@ -898,8 +1035,6 @@
         `;
       }
     }
-
-    onLevelChange(document.getElementById('level-select').value);
   </script>
 </body>
 </html>
