@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>სოლფეჯიო • ტრენაჟორი & თეორია</title>
+  <title>სოლფეჯიო • ოქტავები & მუსიკალური სისტემა</title>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
     body {
@@ -20,11 +20,11 @@
     }
     .header {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .title {
       font-size: 1.05rem;
@@ -45,9 +45,6 @@
       font-size: 0.82rem;
       font-weight: 700;
       cursor: pointer;
-      display: flex;
-      align-items: center;
-      gap: 4px;
     }
     .streak-badge {
       background: #fff7ed;
@@ -69,11 +66,11 @@
 
     .level-container {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       display: flex;
       align-items: center;
       gap: 8px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
       background: #ffffff;
       padding: 6px 10px;
       border-radius: 12px;
@@ -99,10 +96,10 @@
 
     .clef-selector {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       display: flex;
       gap: 6px;
-      margin-bottom: 8px;
+      margin-bottom: 6px;
     }
     .clef-btn {
       flex: 1;
@@ -123,12 +120,13 @@
 
     .staff-container {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       background: #fffefb;
       border: 1.5px solid #e2e8f0;
       border-radius: 16px;
       box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
       display: flex;
+      flex-direction: column;
       justify-content: center;
       align-items: center;
       padding: 4px;
@@ -136,8 +134,8 @@
     }
     canvas#staff {
       width: 100%;
-      max-width: 480px;
-      height: 220px;
+      max-width: 500px;
+      height: 230px;
     }
     canvas#confetti {
       position: absolute;
@@ -149,10 +147,24 @@
       border-radius: 16px;
     }
 
+    /* აქტიური ოქტავისა და მუსიკალური ნიშნების პანელი სანოტო სისტემის თავზე */
+    .meta-indicators {
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      padding: 4px 12px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      color: #475569;
+      background: #f8fafc;
+      border-bottom: 1px solid #e2e8f0;
+      border-radius: 12px 12px 0 0;
+    }
+
     #explanation-box {
       width: 100%;
-      max-width: 500px;
-      min-height: 48px;
+      max-width: 520px;
+      min-height: 52px;
       margin: 6px 0;
       padding: 6px 12px;
       border-radius: 10px;
@@ -172,16 +184,18 @@
 
     .controls {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 6px;
     }
+
+    /* ალტერაციის ნიშნები */
     .accidental-bar {
       display: flex;
-      gap: 6px;
+      gap: 5px;
       background: #e2e8f0;
-      padding: 5px;
+      padding: 4px;
       border-radius: 10px;
     }
     .acc-btn {
@@ -189,8 +203,8 @@
       background: white;
       color: #334155;
       border: 1.5px solid transparent;
-      padding: 7px 0;
-      font-size: 1.05rem;
+      padding: 6px 0;
+      font-size: 0.98rem;
       font-weight: 700;
       border-radius: 6px;
       cursor: pointer;
@@ -203,13 +217,13 @@
     .notes-grid {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 8px;
+      gap: 6px;
     }
     .note-btn {
       background: #1e3a8a;
       color: white;
       border: none;
-      padding: 13px 0;
+      padding: 12px 0;
       font-size: 1.15rem;
       font-weight: 800;
       border-radius: 10px;
@@ -223,7 +237,7 @@
       background: #0284c7;
     }
 
-    /* მოდალური ფანჯარა თეორიისთვის */
+    /* მოდალური ფანჯარა */
     .modal-overlay {
       display: none;
       position: fixed;
@@ -236,27 +250,26 @@
       z-index: 100;
       justify-content: center;
       align-items: center;
-      padding: 14px;
+      padding: 12px;
     }
     .modal-content {
       background: white;
       width: 100%;
-      max-width: 520px;
+      max-width: 540px;
       max-height: 85vh;
       border-radius: 16px;
       display: flex;
       flex-direction: column;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
     }
     .modal-header {
-      padding: 14px 16px;
+      padding: 12px 16px;
       border-bottom: 1px solid #e2e8f0;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
     .modal-title {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 800;
       color: #1e3a8a;
     }
@@ -266,37 +279,32 @@
       font-size: 1.5rem;
       color: #64748b;
       cursor: pointer;
-      line-height: 1;
     }
     .modal-body {
-      padding: 16px;
+      padding: 14px;
       overflow-y: auto;
-      font-size: 0.92rem;
-      line-height: 1.5;
+      font-size: 0.88rem;
+      line-height: 1.45;
       color: #334155;
       user-select: text;
-    }
-    .theory-section {
-      margin-bottom: 16px;
-    }
-    .theory-section h4 {
-      margin: 0 0 6px 0;
-      color: #0f172a;
-      font-size: 1rem;
     }
     .theory-box {
       background: #f8fafc;
       border-left: 3px solid #1e3a8a;
-      padding: 8px 12px;
+      padding: 8px 10px;
       border-radius: 0 8px 8px 0;
-      margin-bottom: 8px;
+      margin-bottom: 10px;
+    }
+    .theory-box h4 {
+      margin: 0 0 4px 0;
+      color: #0f172a;
     }
   </style>
 </head>
 <body>
 
   <div class="header">
-    <div class="title">სოლფეჯიო • ტრენაჟორი</div>
+    <div class="title">სოლფეჯიო • სრული სისტემა</div>
     <div class="stats-row">
       <button class="theory-btn" onclick="openTheoryModal()">📖 თეორია</button>
       <div class="streak-badge" id="streak-box">🔥 <span id="streak-num">0</span></div>
@@ -308,9 +316,9 @@
     <span class="level-label">საფეხური:</span>
     <select class="level-select" id="level-select" onchange="onLevelChange(this.value)">
       <option value="1">I კლასი (მხოლოდ I ოქტავა, ნიშნების გარეშე)</option>
-      <option value="2">II – IV კლასი (ვიოლინო/ბანი, მარტივი ♯ / ♭)</option>
-      <option value="3">V – VII კლასი (დამატებითი ხაზები, ♯ ♭ ♮)</option>
-      <option value="4" selected>კონსერვატორია (სრული დიაპაზონი + დუბლ-ალტერაცია)</option>
+      <option value="2">II – IV კლასი (ვიოლინო/ბანი, მცირე & I ოქტავა, ♯/♭)</option>
+      <option value="3">V – VII კლასი (დიდი, მცირე, I, II ოქტავები, დამატებითი ხაზები)</option>
+      <option value="4" selected>კონსერვატორია (სრული ოქტავები + დუბლ-ალტერაცია & არტიკულაცია)</option>
     </select>
   </div>
 
@@ -321,8 +329,12 @@
   </div>
 
   <div class="staff-container">
-    <canvas id="staff" width="1000" height="440"></canvas>
-    <canvas id="confetti" width="500" height="220"></canvas>
+    <div class="meta-indicators">
+      <span id="target-octave-tag">ოქტავა: I ოქტავა</span>
+      <span id="target-art-tag">არტიკულაცია: ჩვეულებრივი</span>
+    </div>
+    <canvas id="staff" width="1000" height="460"></canvas>
+    <canvas id="confetti" width="500" height="230"></canvas>
   </div>
 
   <div id="explanation-box">
@@ -354,11 +366,11 @@
   <div class="modal-overlay" id="theory-modal" onclick="closeTheoryModal(event)">
     <div class="modal-content" onclick="event.stopPropagation()">
       <div class="modal-header">
-        <div class="modal-title" id="theory-title">სოლფეჯიოს თეორია</div>
+        <div class="modal-title" id="theory-title">სოლფეჯიოს სრული აკადემიური თეორია</div>
         <button class="close-btn" onclick="closeTheoryModal()">&times;</button>
       </div>
       <div class="modal-body" id="theory-body">
-        <!-- დინამიურად ივსება კლასის მიხედვით -->
+        <!-- ივსება დინამიკურად -->
       </div>
     </div>
   </div>
@@ -371,19 +383,32 @@
       return audioCtx;
     }
 
-    function playSynthTone(freq) {
+    function playSynthTone(freq, articulation) {
       try {
         const ctx = getAudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
         osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
-        gain.gain.setValueAtTime(0.35, ctx.currentTime);
-        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+
+        let dur = 1.1;
+        let peakGain = 0.35;
+
+        if (articulation === 'staccato') {
+          dur = 0.22; // მოკლე, მოწყვეტილი
+          peakGain = 0.45;
+        } else if (articulation === 'accent') {
+          peakGain = 0.6; // მძლავრი შეტევა
+        } else if (articulation === 'fermata') {
+          dur = 2.4; // გაჩერებული, გაგრძელებული
+        }
+
+        gain.gain.setValueAtTime(peakGain, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + dur);
         osc.connect(gain);
         gain.connect(ctx.destination);
         osc.start();
-        osc.stop(ctx.currentTime + 1.2);
+        osc.stop(ctx.currentTime + dur);
       } catch (e) {}
     }
 
@@ -407,46 +432,50 @@
 
     const accidentalSemitones = { '': 0, '♯': 1, '♭': -1, '𝄪': 2, '𝄫': -2 };
 
+    // ვიოლინოს გასაღების ბაზა (ოქტავების ზუსტი მითითებით)
     const trebleAll = [
-      { name: 'სოლ', baseFreq: 196.00, offset: -5, ledgers: [-4, -2], octave: 'მცირე', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
-      { name: 'ლა',  baseFreq: 220.00, offset: -4, ledgers: [-4, -2], octave: 'მცირე', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
-      { name: 'სი',  baseFreq: 246.94, offset: -3, ledgers: [-2], octave: 'მცირე', lineDesc: 'ქვედა 1-ელ დამატებით ხაზს ქვემოთ', minLevel: 3 },
-      { name: 'დო',  baseFreq: 261.63, offset: -2, ledgers: [-2], octave: 'I', lineDesc: 'ქვედა 1-ელ დამატებით ხაზზე', minLevel: 1 },
-      { name: 'რე',  baseFreq: 293.66, offset: -1, ledgers: [], octave: 'I', lineDesc: 'პირველ ხაზს ქვემოთ', minLevel: 1 },
-      { name: 'მი',  baseFreq: 329.63, offset: 0,  ledgers: [], octave: 'I', lineDesc: 'პირველ ძირითად ხაზზე', minLevel: 1 },
-      { name: 'ფა',  baseFreq: 349.23, offset: 1,  ledgers: [], octave: 'I', lineDesc: 'I და II ხაზებს შორის', minLevel: 1 },
-      { name: 'სოლ', baseFreq: 392.00, offset: 2,  ledgers: [], octave: 'I', lineDesc: 'მეორე ძირითად ხაზზე', minLevel: 1 },
-      { name: 'ლა',  baseFreq: 440.00, offset: 3,  ledgers: [], octave: 'I', lineDesc: 'II და III ხაზებს შორის', minLevel: 1 },
-      { name: 'სი',  baseFreq: 493.88, offset: 4,  ledgers: [], octave: 'I', lineDesc: 'მესამე (შუა) ძირითად ხაზზე', minLevel: 1 },
-      { name: 'დო',  baseFreq: 523.25, offset: 5,  ledgers: [], octave: 'II', lineDesc: 'III და IV ხაზებს შორის', minLevel: 2 },
-      { name: 'რე',  baseFreq: 587.33, offset: 6,  ledgers: [], octave: 'II', lineDesc: 'მეოთხე ძირითად ხაზზე', minLevel: 2 },
-      { name: 'მი',  baseFreq: 659.25, offset: 7,  ledgers: [], octave: 'II', lineDesc: 'IV და V ხაზებს შორის', minLevel: 2 },
-      { name: 'ფა',  baseFreq: 698.46, offset: 8,  ledgers: [], octave: 'II', lineDesc: 'მეხუთე ძირითად ხაზზე', minLevel: 2 },
-      { name: 'სოლ', baseFreq: 783.99, offset: 9,  ledgers: [], octave: 'II', lineDesc: 'მეხუთე ხაზს ზემოთ', minLevel: 3 },
-      { name: 'ლა',  baseFreq: 880.00, offset: 10, ledgers: [10], octave: 'II', lineDesc: 'ზედა 1-ელ დამატებით ხაზზე', minLevel: 3 },
-      { name: 'სი',  baseFreq: 987.77, offset: 11, ledgers: [10], octave: 'II', lineDesc: 'ზედა 1-ელ დამატებით ხაზს ზემოთ', minLevel: 4 },
-      { name: 'დო',  baseFreq: 1046.5, offset: 12, ledgers: [10, 12], octave: 'III', lineDesc: 'ზედა მე-2 დამატებით ხაზზე', minLevel: 4 }
+      { name: 'სოლ', baseFreq: 196.00, offset: -5, ledgers: [-4, -2], octave: 'მცირე ოქტავა', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
+      { name: 'ლა',  baseFreq: 220.00, offset: -4, ledgers: [-4, -2], octave: 'მცირე ოქტავა', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
+      { name: 'სი',  baseFreq: 246.94, offset: -3, ledgers: [-2], octave: 'მცირე ოქტავა', lineDesc: 'ქვედა 1-ელ დამატებით ხაზს ქვემოთ', minLevel: 3 },
+      { name: 'დო',  baseFreq: 261.63, offset: -2, ledgers: [-2], octave: 'I ოქტავა', lineDesc: 'ქვედა 1-ელ დამატებით ხაზზე', minLevel: 1 },
+      { name: 'რე',  baseFreq: 293.66, offset: -1, ledgers: [], octave: 'I ოქტავა', lineDesc: 'პირველ ხაზს ქვემოთ', minLevel: 1 },
+      { name: 'მი',  baseFreq: 329.63, offset: 0,  ledgers: [], octave: 'I ოქტავა', lineDesc: 'პირველ ძირითად ხაზზე', minLevel: 1 },
+      { name: 'ფა',  baseFreq: 349.23, offset: 1,  ledgers: [], octave: 'I ოქტავა', lineDesc: 'I და II ხაზებს შორის', minLevel: 1 },
+      { name: 'სოლ', baseFreq: 392.00, offset: 2,  ledgers: [], octave: 'I ოქტავა', lineDesc: 'მეორე ძირითად ხაზზე', minLevel: 1 },
+      { name: 'ლა',  baseFreq: 440.00, offset: 3,  ledgers: [], octave: 'I ოქტავა', lineDesc: 'II და III ხაზებს შორის', minLevel: 1 },
+      { name: 'სი',  baseFreq: 493.88, offset: 4,  ledgers: [], octave: 'I ოქტავა', lineDesc: 'მესამე (შუა) ძირითად ხაზზე', minLevel: 1 },
+      { name: 'დო',  baseFreq: 523.25, offset: 5,  ledgers: [], octave: 'II ოქტავა', lineDesc: 'III და IV ხაზებს შორის', minLevel: 2 },
+      { name: 'რე',  baseFreq: 587.33, offset: 6,  ledgers: [], octave: 'II ოქტავა', lineDesc: 'მეოთხე ძირითად ხაზზე', minLevel: 2 },
+      { name: 'მი',  baseFreq: 659.25, offset: 7,  ledgers: [], octave: 'II ოქტავა', lineDesc: 'IV და V ხაზებს შორის', minLevel: 2 },
+      { name: 'ფა',  baseFreq: 698.46, offset: 8,  ledgers: [], octave: 'II ოქტავა', lineDesc: 'მეხუთე ძირითად ხაზზე', minLevel: 2 },
+      { name: 'სოლ', baseFreq: 783.99, offset: 9,  ledgers: [], octave: 'II ოქტავა', lineDesc: 'მეხუთე ხაზს ზემოთ', minLevel: 3 },
+      { name: 'ლა',  baseFreq: 880.00, offset: 10, ledgers: [10], octave: 'II ოქტავა', lineDesc: 'ზედა 1-ელ დამატებით ხაზზე', minLevel: 3 },
+      { name: 'სი',  baseFreq: 987.77, offset: 11, ledgers: [10], octave: 'II ოქტავა', lineDesc: 'ზედა 1-ელ დამატებით ხაზს ზემოთ', minLevel: 4 },
+      { name: 'დო',  baseFreq: 1046.5, offset: 12, ledgers: [10, 12], octave: 'III ოქტავა', lineDesc: 'ზედა მე-2 დამატებით ხაზზე', minLevel: 4 }
     ];
 
+    // ბანის გასაღების ბაზა
     const bassAll = [
-      { name: 'დო',  baseFreq: 65.41,  offset: -4, ledgers: [-4, -2], octave: 'დიდი', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
-      { name: 'რე',  baseFreq: 73.42,  offset: -3, ledgers: [-2], octave: 'დიდი', lineDesc: 'ქვედა 1-ელ დამატებით ხაზს ქვემოთ', minLevel: 4 },
-      { name: 'მი',  baseFreq: 82.41,  offset: -2, ledgers: [-2], octave: 'დიდი', lineDesc: 'ქვედა 1-ელ დამატებით ხაზზე', minLevel: 3 },
-      { name: 'ფა',  baseFreq: 87.31,  offset: -1, ledgers: [], octave: 'დიდი', lineDesc: 'პირველ ხაზს ქვემოთ', minLevel: 2 },
-      { name: 'სოლ', baseFreq: 98.00,  offset: 0,  ledgers: [], octave: 'დიდი', lineDesc: 'პირველ ძირითად ხაზზე', minLevel: 2 },
-      { name: 'ლა',  baseFreq: 110.00, offset: 1,  ledgers: [], octave: 'დიდი', lineDesc: 'I და II ხაზებს შორის', minLevel: 2 },
-      { name: 'სი',  baseFreq: 123.47, offset: 2,  ledgers: [], octave: 'დიდი', lineDesc: 'მეორე ძირითად ხაზზე', minLevel: 2 },
-      { name: 'დო',  baseFreq: 130.81, offset: 3,  ledgers: [], octave: 'მცირე', lineDesc: 'II და III ხაზებს შორის', minLevel: 2 },
-      { name: 'რე',  baseFreq: 146.83, offset: 4,  ledgers: [], octave: 'მცირე', lineDesc: 'მესამე (შუა) ძირითად ხაზზე', minLevel: 2 },
-      { name: 'მი',  baseFreq: 164.81, offset: 5,  ledgers: [], octave: 'მცირე', lineDesc: 'III და IV ხაზებს შორის', minLevel: 2 },
-      { name: 'ფა',  baseFreq: 174.61, offset: 6,  ledgers: [], octave: 'მცირე', lineDesc: 'მეოთხე ძირითად ხაზზე', minLevel: 2 },
-      { name: 'სოლ', baseFreq: 196.00, offset: 7,  ledgers: [], octave: 'მცირე', lineDesc: 'IV და V ხაზებს შორის', minLevel: 2 },
-      { name: 'ლა',  baseFreq: 220.00, offset: 8,  ledgers: [], octave: 'მცირე', lineDesc: 'მეხუთე ძირითად ხაზზე', minLevel: 2 },
-      { name: 'სი',  baseFreq: 246.94, offset: 9,  ledgers: [], octave: 'მცირე', lineDesc: 'მეხუთე ხაზს ზემოთ', minLevel: 3 },
-      { name: 'დო',  baseFreq: 261.63, offset: 10, ledgers: [10], octave: 'I', lineDesc: 'ზედა 1-ელ დამატებით ხაზზე', minLevel: 3 },
-      { name: 'რე',  baseFreq: 293.66, offset: 11, ledgers: [10], octave: 'I', lineDesc: 'ზედა 1-ელ დამატებით ხაზს ზემოთ', minLevel: 4 },
-      { name: 'მი',  baseFreq: 329.63, offset: 12, ledgers: [10, 12], octave: 'I', lineDesc: 'ზედა მე-2 დამატებით ხაზზე', minLevel: 4 }
+      { name: 'დო',  baseFreq: 65.41,  offset: -4, ledgers: [-4, -2], octave: 'დიდი ოქტავა', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
+      { name: 'რე',  baseFreq: 73.42,  offset: -3, ledgers: [-2], octave: 'დიდი ოქტავა', lineDesc: 'ქვედა 1-ელ დამატებით ხაზს ქვემოთ', minLevel: 4 },
+      { name: 'მი',  baseFreq: 82.41,  offset: -2, ledgers: [-2], octave: 'დიდი ოქტავა', lineDesc: 'ქვედა 1-ელ დამატებით ხაზზე', minLevel: 3 },
+      { name: 'ფა',  baseFreq: 87.31,  offset: -1, ledgers: [], octave: 'დიდი ოქტავა', lineDesc: 'პირველ ხაზს ქვემოთ', minLevel: 2 },
+      { name: 'სოლ', baseFreq: 98.00,  offset: 0,  ledgers: [], octave: 'დიდი ოქტავა', lineDesc: 'პირველ ძირითად ხაზზე', minLevel: 2 },
+      { name: 'ლა',  baseFreq: 110.00, offset: 1,  ledgers: [], octave: 'დიდი ოქტავა', lineDesc: 'I და II ხაზებს შორის', minLevel: 2 },
+      { name: 'სი',  baseFreq: 123.47, offset: 2,  ledgers: [], octave: 'დიდი ოქტავა', lineDesc: 'მეორე ძირითად ხაზზე', minLevel: 2 },
+      { name: 'დო',  baseFreq: 130.81, offset: 3,  ledgers: [], octave: 'მცირე ოქტავა', lineDesc: 'II და III ხაზებს შორის', minLevel: 2 },
+      { name: 'რე',  baseFreq: 146.83, offset: 4,  ledgers: [], octave: 'მცირე ოქტავა', lineDesc: 'მესამე (შუა) ძირითად ხაზზე', minLevel: 2 },
+      { name: 'მი',  baseFreq: 164.81, offset: 5,  ledgers: [], octave: 'მცირე ოქტავა', lineDesc: 'III და IV ხაზებს შორის', minLevel: 2 },
+      { name: 'ფა',  baseFreq: 174.61, offset: 6,  ledgers: [], octave: 'მცირე ოქტავა', lineDesc: 'მეოთხე ძირითად ხაზზე', minLevel: 2 },
+      { name: 'სოლ', baseFreq: 196.00, offset: 7,  ledgers: [], octave: 'მცირე ოქტავა', lineDesc: 'IV და V ხაზებს შორის', minLevel: 2 },
+      { name: 'ლა',  baseFreq: 220.00, offset: 8,  ledgers: [], octave: 'მცირე ოქტავა', lineDesc: 'მეხუთე ძირითად ხაზზე', minLevel: 2 },
+      { name: 'სი',  baseFreq: 246.94, offset: 9,  ledgers: [], octave: 'მცირე ოქტავა', lineDesc: 'მეხუთე ხაზს ზემოთ', minLevel: 3 },
+      { name: 'დო',  baseFreq: 261.63, offset: 10, ledgers: [10], octave: 'I ოქტავა', lineDesc: 'ზედა 1-ელ დამატებით ხაზზე', minLevel: 3 },
+      { name: 'რე',  baseFreq: 293.66, offset: 11, ledgers: [10], octave: 'I ოქტავა', lineDesc: 'ზედა 1-ელ დამატებით ხაზს ზემოთ', minLevel: 4 },
+      { name: 'მი',  baseFreq: 329.63, offset: 12, ledgers: [10, 12], octave: 'I ოქტავა', lineDesc: 'ზედა მე-2 დამატებით ხაზზე', minLevel: 4 }
     ];
+
+    const articulationsList = ['normal', 'legato', 'staccato', 'accent', 'fermata'];
 
     let currentLevel = 4;
     let currentClefMode = 'treble';
@@ -466,126 +495,51 @@
     const streakNum = document.getElementById('streak-num');
     const accidentalBar = document.getElementById('accidental-bar');
 
-    // თეორიული მონაცემთა ბაზა კლასების მიხედვით
-    const theoryData = {
-      1: {
-        title: "I კლასის თეორიული საფუძვლები",
-        html: `
-          <div class="theory-section">
-            <h4>1. სანოტო სისტემა და ვიოლინოს გასაღები</h4>
-            <div class="theory-box">
-              სანოტო სისტემა შედგება <b>5 ძირითადი ჰორიზონტალური ხაზისგან</b>, რომლებსაც ქვემოდან ზემოთ ვითვლით.<br>
-              <b>ვიოლინოს გასაღები (𝄞):</b> ეწოდება ასევე <i>სოლ-ის გასაღები</i>, რადგან იწყება მეორე ხაზიდან და ამ ხაზზე აფიქსირებს პირველი ოქტავის ნოტა <b>სოლს</b>.
-            </div>
-          </div>
-          <div class="theory-section">
-            <h4>2. I ოქტავის ნოტების განლაგება</h4>
-            <div class="theory-box">
-              • <b>დო:</b> ქვედა პირველ დამატებით ხაზზე.<br>
-              • <b>რე:</b> პირველ ხაზს ქვემოთ.<br>
-              • <b>მი:</b> პირველ ხაზზე.<br>
-              • <b>ფა:</b> პირველ და მეორე ხაზს შორის.<br>
-              • <b>სოლ:</b> მეორე ხაზზე.<br>
-              • <b>ლა:</b> მეორე და მესამე ხაზს შორის.<br>
-              • <b>სი:</b> მესამე (შუა) ხაზზე.
-            </div>
-          </div>
-        `
-      },
-      2: {
-        title: "II – IV კლასის თეორიული კურსი",
-        html: `
-          <div class="theory-section">
-            <h4>1. ბანის გასაღები (𝄢 - F Clef)</h4>
-            <div class="theory-box">
-              ეწოდება <i>ფა-ს გასაღები</i>. მისი წერტილები მეოთხე ხაზს ერტყმის და ამ ხაზზე აფიქსირებს მცირე ოქტავის ნოტა <b>ფას</b>.<br>
-              • პირველ ხაზზე ზის: <b>სოლ</b> (დიდი ოქტავა).<br>
-              • მესამე ხაზზე: <b>რე</b> (მცირე ოქტავა).<br>
-              • ზედა პირველ დამატებით ხაზზე: <b>დო</b> (პირველი ოქტავა).
-            </div>
-          </div>
-          <div class="theory-section">
-            <h4>2. ალტერაციის ძირითადი ნიშნები</h4>
-            <div class="theory-box">
-              • <b>დიეზი (♯):</b> ნოტს ამაღლებს ნახევარი ტონით.<br>
-              • <b>ბემოლი (♭):</b> ნოტს ადაბლებს ნახევარი ტონით.<br>
-              • <b>ბეკარი (♮):</b> აუქმებს დიეზისა და ბემოლის მოქმედებას.
-            </div>
-          </div>
-          <div class="theory-section">
-            <h4>3. ტონი და ნახევარტონი</h4>
-            <div class="theory-box">
-              ფორტეპიანოს კლავიატურაზე ორ მეზობელ კლავიშს შორის უმოკლესი მანძილი არის <b>ნახევარტონი</b> (მაგ: მი-ფა, სი-დო). ორი ნახევარტონი შეადგენს <b>ერთ მთელ ტონს</b>.
-            </div>
-          </div>
-        `
-      },
-      3: {
-        title: "V – VII კლასის თეორიული კურსი",
-        html: `
-          <div class="theory-section">
-            <h4>1. მარტივი ინტერვალები</h4>
-            <div class="theory-box">
-              ინტერვალი არის ორ ბგერას შორის მანძილი. მარტივია ინტერვალები ოქტავის ფარგლებში:<br>
-              • <b>პრიმა (1):</b> 0 ტონი (სუფთა)<br>
-              • <b>სეკუნდა (2):</b> მ2 = 0.5 ტონი, დ2 = 1 ტონი<br>
-              • <b>ტერცია (3):</b> მ3 = 1.5 ტონი, დ3 = 2 ტონი<br>
-              • <b>კვარტა (4):</b> ს4 = 2.5 ტონი, გად.4 (ტრიტონი) = 3 ტონი<br>
-              • <b>კვინტა (5):</b> შემც.5 (ტრიტონი) = 3 ტონი, ს5 = 3.5 ტონი<br>
-              • <b>სექსტა (6):</b> მ6 = 4 ტონი, დ6 = 4.5 ტონი<br>
-              • <b>სეპტიმა (7):</b> მ7 = 5 ტონი, დ7 = 5.5 ტონი<br>
-              • <b>ოქტავა (8):</b> ს8 = 6 ტონი
-            </div>
-          </div>
-          <div class="theory-section">
-            <h4>2. სამხმოვანებები (ტრიადები)</h4>
-            <div class="theory-box">
-              • <b>მაჟორული სამხმოვანება ($M_3^5$):</b> დ3 + მ3 (სუფთა კვინტის ფარგლებში).<br>
-              • <b>მინორული სამხმოვანება ($m_3^5$):</b> მ3 + დ3.<br>
-              • მათი შებრუნებები: <b>სექსტაკორდი</b> (6) და <b>კვარტსექსტაკორდი</b> (4/6).
-            </div>
-          </div>
-        `
-      },
-      4: {
-        title: "საკონსერვატორიო & სააბიტურიენტო თეორია",
-        html: `
-          <div class="theory-section">
-            <h4>1. რთული ალტერაცია და ენჰარმონიზმი</h4>
-            <div class="theory-box">
-              • <b>დუბლ-დიეზი (𝄪):</b> ნოტს ამაღლებს 1 მთელი ტონით (2 ნახევარტონით).<br>
-              • <b>დუბლ-ბემოლი (𝄫):</b> ნოტს ადაბლებს 1 მთელი ტონით.<br>
-              • <b>ენჰარმონიზმი:</b> ბგერების თანაბარი ჟღერადობა სხვადასხვა სახელწოდებითა და ჩაწერით (მაგ: ფა𝄪 = სოლ♮; დო♯ = რე♭).
-            </div>
-          </div>
-          <div class="theory-section">
-            <h4>2. სეპტაკორდები და მათი შებრუნებები</h4>
-            <div class="theory-box">
-              <b>დომინანტსეპტაკორდი ($D_7$):</b> აგებულია V საფეხურზე (მაჟორული სამხმოვანება + მცირე ტერცია).<br>
-              შებრუნებები:<br>
-              • <b>კვინტსექსტაკორდი ($D_{65}$):</b> გადადის ტონიკურ სამხმოვანებაში გაორკეცებული ტონიკით.<br>
-              • <b>ტერცკვარტაკორდი ($D_{43}$):</b> გადადის სრულ ტონიკურ სამხმოვანებაში.<br>
-              • <b>სეკუნდაკორდი ($D_2$):</b> გადადის ტონიკურ სექსტაკორდში.
-            </div>
-          </div>
-          <div class="theory-section">
-            <h4>3. ხალხური და ძველი კილოები</h4>
-            <div class="theory-box">
-              იონიური (მაჟორი), ეოლიური (ნატურალური მინორი), დორიული (მინორი VI მაღალით), ფრიგიული (მინორი II დაბალით), ლიდიური (მაჟორი IV მაღალით), მიქსოლიდიური (მაჟორი VII დაბალით).
-            </div>
-          </div>
-        `
-      }
+    const theoryDataFull = {
+      title: "აკადემიური მუსიკალური თეორია (კონსერვატორიის პროგრამა)",
+      html: `
+        <div class="theory-box">
+          <h4>1. ოქტავების სისტემა და რეგისტრები</h4>
+          ფორტეპიანოს სრული ბგერათრიგი იყოფა 9 ოქტავად (დაბლიდან მაღლისკენ):<br>
+          <b>სუბკონტროქტავა $\rightarrow$ კონტროქტავა $\rightarrow$ დიდი ოქტავა $\rightarrow$ მცირე ოქტავა $\rightarrow$ პირველი (I) ოქტავა $\rightarrow$ მეორე (II) $\rightarrow$ მესამე (III) $\rightarrow$ მეოთხე (IV) $\rightarrow$ მეხუთე (V) ოქტავა</b>.<br>
+          • <b>ვიოლინოს გასაღები (𝄞):</b> ძირითადად მოიცავს I, II და III ოქტავებს.<br>
+          • <b>ბანის გასაღები (𝄢):</b> მოიცავს დიდ, მცირე და I ოქტავის დასაწყისს.
+        </div>
+
+        <div class="theory-box">
+          <h4>2. ტაქტი, ტაქტის ხაზი და ზომა</h4>
+          • <b>ტაქტი:</b> მანძილი ერთი ძლიერი წილიდან მომდევნო ძლიერ წილამდე.<br>
+          • <b>ტაქტის ხაზი:</b> ვერტიკალური გამყოფი ხაზი ხუთხაზიან სისტემაზე.<br>
+          • <b>ზომა (მაგ: 2/4, 3/4, 4/4):</b> ზედა ციფრი გვიჩვენებს წილების რაოდენობას ტაქტში, ქვედა — თითოეული წილის გრძლიობას.
+        </div>
+
+        <div class="theory-box">
+          <h4>3. არტიკულაციის ნიშნები</h4>
+          • <b>ლეგატო (Legato):</b> შეკრული, გადაბმული შესრულება წყვეტის გარეშე (აღინიშნება რკალით - ლიგით).<br>
+          • <b>სტაკატო (Staccato):</b> მოწყვეტილი, მოკლე შესრულება (აღინიშნება წერტილით $\\cdot$ ნოტის თავზე).<br>
+          • <b>აქცენტი ($>$):</b> ბგერის გამოკვეთილი, ძლიერი შეტევა.<br>
+          • <b>ტენუტო ($-$):</b> ბგერის ზუსტი, მყარი შენარჩუნება სრული ხანგრძლივობით.<br>
+          • <b>ფერმატა (𝄐):</b> ნოტის ან პაუზის გაჩერება/გაგრძელება შემსრულებლის შეხედულებისამებრ.
+        </div>
+
+        <div class="theory-box">
+          <h4>4. ალტერაციის სრული სისტემა</h4>
+          • <b>დიეზი (♯):</b> ამაღლება ნახევარი ტონით.<br>
+          • <b>ბემოლი (♭):</b> დადაბლება ნახევარი ტონით.<br>
+          • <b>დუბლ-დიეზი (𝄪):</b> ამაღლება 1 მთელი ტონით (2 ნახევარტონით).<br>
+          • <b>დუბლ-ბემოლი (𝄫):</b> დადაბლება 1 მთელი ტონით.<br>
+          • <b>ბეკარი (♮):</b> ალტერაციის გაუქმება.
+        </div>
+      `
     };
 
     function openTheoryModal() {
-      const data = theoryData[currentLevel] || theoryData[4];
-      document.getElementById('theory-title').textContent = data.title;
-      document.getElementById('theory-body').innerHTML = data.html;
+      document.getElementById('theory-title').textContent = theoryDataFull.title;
+      document.getElementById('theory-body').innerHTML = theoryDataFull.html;
       document.getElementById('theory-modal').style.display = 'flex';
     }
 
-    function closeTheoryModal(e) {
+    function closeTheoryModal() {
       document.getElementById('theory-modal').style.display = 'none';
     }
 
@@ -675,7 +629,7 @@
       if (!currentQuestion) return;
       const semitoneShift = accidentalSemitones[currentQuestion.accidental] || 0;
       const adjustedFreq = currentQuestion.baseFreq * Math.pow(2, semitoneShift / 12);
-      playSynthTone(adjustedFreq);
+      playSynthTone(adjustedFreq, currentQuestion.articulation);
     }
 
     function renderStaff() {
@@ -683,6 +637,7 @@
       const centerY = canvas.height / 2;
       const spacing = 34;
 
+      // 5 ძირითადი ხაზი
       ctx.lineWidth = 3;
       ctx.strokeStyle = '#334155';
       for (let i = -2; i <= 2; i++) {
@@ -693,6 +648,7 @@
         ctx.stroke();
       }
 
+      // გასაღები
       ctx.save();
       ctx.fillStyle = '#0f172a';
       if (activeClef === 'treble') {
@@ -704,12 +660,41 @@
       }
       ctx.restore();
 
+      // ტაქტის ზომა (4/4)
+      ctx.save();
+      ctx.font = 'bold 38px serif';
+      ctx.fillStyle = '#1e293b';
+      ctx.textAlign = 'center';
+      ctx.fillText('4', 145, centerY - 8);
+      ctx.fillText('4', 145, centerY + 28);
+      ctx.restore();
+
+      // ტაქტის ხაზები
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#64748b';
+      ctx.beginPath();
+      ctx.moveTo(175, centerY - 2 * spacing);
+      ctx.lineTo(175, centerY + 2 * spacing);
+      ctx.stroke();
+
+      // მარჯვენა დასკვნითი ორმაგი ტაქტის ხაზი
+      ctx.beginPath();
+      ctx.moveTo(canvas.width - 45, centerY - 2 * spacing);
+      ctx.lineTo(canvas.width - 45, centerY + 2 * spacing);
+      ctx.stroke();
+      ctx.lineWidth = 6;
+      ctx.beginPath();
+      ctx.moveTo(canvas.width - 35, centerY - 2 * spacing);
+      ctx.lineTo(canvas.width - 35, centerY + 2 * spacing);
+      ctx.stroke();
+
       if (!currentQuestion) return;
 
-      const noteX = canvas.width / 2 + 70;
+      const noteX = canvas.width / 2 + 65;
       const baseLine1Y = centerY + (2 * spacing);
       const noteY = baseLine1Y - (currentQuestion.offset * (spacing / 2));
 
+      // დამატებითი ხაზები
       if (currentQuestion.ledgers && currentQuestion.ledgers.length > 0) {
         ctx.lineWidth = 3.5;
         ctx.strokeStyle = '#334155';
@@ -722,6 +707,7 @@
         });
       }
 
+      // ალტერაციის ნიშანი
       if (currentQuestion.accidental !== '') {
         ctx.save();
         ctx.fillStyle = '#b91c1c';
@@ -732,6 +718,7 @@
         ctx.restore();
       }
 
+      // ნოტის თავაკი
       ctx.save();
       ctx.translate(noteX, noteY);
       ctx.rotate(-0.35);
@@ -741,10 +728,12 @@
       ctx.fill();
       ctx.restore();
 
+      // ნოტის ჯოხი (Stem)
       ctx.lineWidth = 3.5;
       ctx.strokeStyle = '#1e3a8a';
       ctx.beginPath();
-      if (currentQuestion.offset < 4) {
+      const stemUp = currentQuestion.offset < 4;
+      if (stemUp) {
         ctx.moveTo(noteX + 22, noteY);
         ctx.lineTo(noteX + 22, noteY - 105);
       } else {
@@ -752,6 +741,48 @@
         ctx.lineTo(noteX - 22, noteY + 105);
       }
       ctx.stroke();
+
+      // არტიკულაციის დახატვა
+      ctx.save();
+      ctx.fillStyle = '#ea580c';
+      ctx.strokeStyle = '#ea580c';
+      ctx.lineWidth = 3;
+
+      if (currentQuestion.articulation === 'staccato') {
+        // წერტილი ნოტის თავზე/ქვეშ
+        let dotY = stemUp ? noteY + 28 : noteY - 28;
+        ctx.beginPath();
+        ctx.arc(noteX, dotY, 4.5, 0, 2 * Math.PI);
+        ctx.fill();
+      } else if (currentQuestion.articulation === 'accent') {
+        // აქცენტის ნიშანი >
+        let accY = stemUp ? noteY + 28 : noteY - 32;
+        ctx.beginPath();
+        ctx.moveTo(noteX - 14, accY - 6);
+        ctx.lineTo(noteX + 12, accY);
+        ctx.lineTo(noteX - 14, accY + 6);
+        ctx.stroke();
+      } else if (currentQuestion.articulation === 'legato') {
+        // ლეგატოს ლიგა
+        ctx.beginPath();
+        let arcY = stemUp ? noteY + 26 : noteY - 26;
+        ctx.arc(noteX, arcY, 32, stemUp ? Math.PI * 0.15 : Math.PI * 1.15, stemUp ? Math.PI * 0.85 : Math.PI * 1.85);
+        ctx.stroke();
+      } else if (currentQuestion.articulation === 'fermata') {
+        // ფერმატა 𝄐
+        ctx.font = '46px serif';
+        ctx.textAlign = 'center';
+        ctx.fillText('𝄐', noteX, centerY - 2.8 * spacing);
+      }
+      ctx.restore();
+    }
+
+    function getArtGeorgianName(art) {
+      if (art === 'staccato') return 'სტაკატო (მოწყვეტილი)';
+      if (art === 'legato') return 'ლეგატო (შეკრული ლიგა)';
+      if (art === 'accent') return 'აქცენტი (გამოკვეთილი დარტყმა)';
+      if (art === 'fermata') return 'ფერმატა (გაჩერება/გაგრძელება)';
+      return 'ნორმალური';
     }
 
     function nextQuestion() {
@@ -778,11 +809,21 @@
         acc = Math.random() > 0.45 ? ['♯', '♭', '𝄪', '𝄫'][Math.floor(Math.random() * 4)] : '';
       }
 
+      // არტიკულაცია (დონე 3 და 4-ზე)
+      let art = 'normal';
+      if (currentLevel >= 3 && Math.random() > 0.4) {
+        art = articulationsList[Math.floor(Math.random() * articulationsList.length)];
+      }
+
       currentQuestion = {
         ...noteBase,
         accidental: acc,
+        articulation: art,
         clef: activeClef
       };
+
+      document.getElementById('target-octave-tag').textContent = `ოქტავა: ${currentQuestion.octave}`;
+      document.getElementById('target-art-tag').textContent = `არტიკულაცია: ${getArtGeorgianName(art)}`;
 
       selectAccidental('');
       renderStaff();
@@ -826,8 +867,10 @@
         explanationBox.style.background = '#f0fdf4';
         explanationBox.style.borderColor = '#86efac';
         explanationBox.innerHTML = `
-          <div class="status-line" style="color: #166534;">✓ სწორია! — ${fullCorrectName}</div>
-          <div style="color: #15803d; font-size: 0.85rem;">${clefTitle}: ${currentQuestion.lineDesc} (${currentQuestion.octave} ოქტავა).</div>
+          <div class="status-line" style="color: #166534;">✓ სწორია! — ${fullCorrectName} (${currentQuestion.octave})</div>
+          <div style="color: #15803d; font-size: 0.85rem;">
+            ${clefTitle}: ${currentQuestion.lineDesc} | არტიკულაცია: <b>${getArtGeorgianName(currentQuestion.articulation)}</b>.
+          </div>
         `;
         setTimeout(nextQuestion, 650);
       } else {
@@ -850,7 +893,7 @@
         explanationBox.innerHTML = `
           <div class="status-line" style="color: #991b1b;">✗ შეცდომაა! სწორია: ${fullCorrectName}</div>
           <div style="color: #b91c1c; font-size: 0.85rem;">
-            <b>აკადემიური წესი:</b> ${clefTitle}-ში ${currentQuestion.lineDesc} მდებარეობს <b>${currentQuestion.name}</b> (${currentQuestion.octave} ოქტავა). ${hintDetail}
+            <b>აკადემიური წესი:</b> ${clefTitle}-ში ${currentQuestion.lineDesc} მდებარეობს <b>${currentQuestion.name}</b> (${currentQuestion.octave}). ${hintDetail}
           </div>
         `;
       }
