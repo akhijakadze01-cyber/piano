@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>სოლფეჯიო • საფეხურებრივი ტრენაჟორი</title>
+  <title>სოლფეჯიო • ტრენაჟორი & თეორია</title>
   <style>
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
     body {
@@ -16,64 +16,90 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
+      overflow-x: hidden;
     }
     .header {
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 6px;
+      margin-bottom: 8px;
     }
     .title {
       font-size: 1.05rem;
       font-weight: 800;
       color: #1e3a8a;
     }
-    .badge {
+    .stats-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .theory-btn {
+      background: #0284c7;
+      color: white;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+    .streak-badge {
+      background: #fff7ed;
+      color: #ea580c;
+      border: 1.5px solid #fdba74;
+      padding: 4px 8px;
+      border-radius: 16px;
+      font-size: 0.82rem;
+      font-weight: 800;
+    }
+    .score-badge {
       background: #1e3a8a;
       color: white;
-      padding: 5px 12px;
+      padding: 5px 10px;
       border-radius: 16px;
-      font-size: 0.85rem;
-      font-weight: bold;
+      font-size: 0.82rem;
+      font-weight: 700;
     }
 
-    /* დონის ასარჩევი Dropdown / ღილაკები */
     .level-container {
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       display: flex;
       align-items: center;
       gap: 8px;
       margin-bottom: 8px;
       background: #ffffff;
       padding: 6px 10px;
-      border-radius: 10px;
-      border: 1px solid #cbd5e1;
+      border-radius: 12px;
+      border: 1px solid #e2e8f0;
     }
     .level-label {
       font-size: 0.85rem;
-      font-weight: 800;
-      color: #475569;
+      font-weight: 700;
+      color: #64748b;
       white-space: nowrap;
     }
     .level-select {
       flex: 1;
       padding: 6px 8px;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       font-weight: bold;
       color: #1e3a8a;
-      background: #f1f5f9;
-      border: 1px solid #94a3b8;
-      border-radius: 6px;
+      background: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
       outline: none;
     }
 
-    /* გასაღებების მართვა */
     .clef-selector {
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       display: flex;
       gap: 6px;
       margin-bottom: 8px;
@@ -83,7 +109,7 @@
       padding: 7px 2px;
       font-size: 0.85rem;
       font-weight: bold;
-      border: 2px solid #cbd5e1;
+      border: 1.5px solid #cbd5e1;
       background: white;
       color: #334155;
       border-radius: 8px;
@@ -97,45 +123,56 @@
 
     .staff-container {
       width: 100%;
-      max-width: 520px;
-      background: #ffffff;
-      border: 2px solid #cbd5e1;
-      border-radius: 14px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      max-width: 500px;
+      background: #fffefb;
+      border: 1.5px solid #e2e8f0;
+      border-radius: 16px;
+      box-shadow: 0 4px 14px rgba(15, 23, 42, 0.05);
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 6px 4px;
+      padding: 4px;
+      position: relative;
     }
-    canvas {
+    canvas#staff {
       width: 100%;
-      max-width: 500px;
+      max-width: 480px;
       height: 220px;
+    }
+    canvas#confetti {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      border-radius: 16px;
     }
 
     #explanation-box {
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       min-height: 48px;
       margin: 6px 0;
-      padding: 8px 12px;
+      padding: 6px 12px;
       border-radius: 10px;
       background: #e2e8f0;
-      font-size: 0.9rem;
+      font-size: 0.88rem;
       line-height: 1.35;
       display: flex;
       flex-direction: column;
       justify-content: center;
+      border: 1px solid transparent;
     }
     .status-line {
       font-weight: 800;
-      font-size: 1rem;
+      font-size: 0.98rem;
       margin-bottom: 2px;
     }
 
     .controls {
       width: 100%;
-      max-width: 520px;
+      max-width: 500px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -150,18 +187,17 @@
     .acc-btn {
       flex: 1;
       background: white;
-      color: #1e293b;
-      border: 2px solid transparent;
-      padding: 8px 0;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 8px;
+      color: #334155;
+      border: 1.5px solid transparent;
+      padding: 7px 0;
+      font-size: 1.05rem;
+      font-weight: 700;
+      border-radius: 6px;
       cursor: pointer;
     }
     .acc-btn.selected {
       background: #ea580c;
       color: white;
-      border-color: #c2410c;
     }
 
     .notes-grid {
@@ -175,10 +211,9 @@
       border: none;
       padding: 13px 0;
       font-size: 1.15rem;
-      font-weight: bold;
+      font-weight: 800;
       border-radius: 10px;
       cursor: pointer;
-      box-shadow: 0 3px 5px rgba(30, 58, 138, 0.18);
     }
     .note-btn:active {
       transform: scale(0.96);
@@ -187,23 +222,95 @@
     .sound-btn {
       background: #0284c7;
     }
+
+    /* მოდალური ფანჯარა თეორიისთვის */
+    .modal-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+      padding: 14px;
+    }
+    .modal-content {
+      background: white;
+      width: 100%;
+      max-width: 520px;
+      max-height: 85vh;
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    }
+    .modal-header {
+      padding: 14px 16px;
+      border-bottom: 1px solid #e2e8f0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .modal-title {
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: #1e3a8a;
+    }
+    .close-btn {
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: #64748b;
+      cursor: pointer;
+      line-height: 1;
+    }
+    .modal-body {
+      padding: 16px;
+      overflow-y: auto;
+      font-size: 0.92rem;
+      line-height: 1.5;
+      color: #334155;
+      user-select: text;
+    }
+    .theory-section {
+      margin-bottom: 16px;
+    }
+    .theory-section h4 {
+      margin: 0 0 6px 0;
+      color: #0f172a;
+      font-size: 1rem;
+    }
+    .theory-box {
+      background: #f8fafc;
+      border-left: 3px solid #1e3a8a;
+      padding: 8px 12px;
+      border-radius: 0 8px 8px 0;
+      margin-bottom: 8px;
+    }
   </style>
 </head>
 <body>
 
   <div class="header">
     <div class="title">სოლფეჯიო • ტრენაჟორი</div>
-    <div class="badge" id="score-text">ქულა: 0 / 0</div>
+    <div class="stats-row">
+      <button class="theory-btn" onclick="openTheoryModal()">📖 თეორია</button>
+      <div class="streak-badge" id="streak-box">🔥 <span id="streak-num">0</span></div>
+      <div class="score-badge" id="score-text">0 / 0</div>
+    </div>
   </div>
 
-  <!-- კლასის / დონის ამომრჩევი -->
   <div class="level-container">
-    <span class="level-label">სწავლების დონე:</span>
+    <span class="level-label">საფეხური:</span>
     <select class="level-select" id="level-select" onchange="onLevelChange(this.value)">
       <option value="1">I კლასი (მხოლოდ I ოქტავა, ნიშნების გარეშე)</option>
       <option value="2">II – IV კლასი (ვიოლინო/ბანი, მარტივი ♯ / ♭)</option>
       <option value="3">V – VII კლასი (დამატებითი ხაზები, ♯ ♭ ♮)</option>
-      <option value="4" selected>აბიტურიენტი / კონსერვატორია (სრული + დუბლ-ნიშნები)</option>
+      <option value="4" selected>კონსერვატორია (სრული დიაპაზონი + დუბლ-ალტერაცია)</option>
     </select>
   </div>
 
@@ -215,14 +322,14 @@
 
   <div class="staff-container">
     <canvas id="staff" width="1000" height="440"></canvas>
+    <canvas id="confetti" width="500" height="220"></canvas>
   </div>
 
   <div id="explanation-box">
-    <div class="status-line" style="color: #334155;">ამოიცანით ნოტა:</div>
+    <div class="status-line" style="color: #475569;">ამოიცანით ნოტა:</div>
   </div>
 
   <div class="controls">
-    <!-- ალტერაციის ნიშნების პანელი (1-ელ დონეზე დაიმალება) -->
     <div class="accidental-bar" id="accidental-bar">
       <button class="acc-btn selected" id="acc-natural" onclick="selectAccidental('')">♮ სუფთა</button>
       <button class="acc-btn" id="acc-sharp" onclick="selectAccidental('♯')">♯ დიეზი</button>
@@ -231,7 +338,6 @@
       <button class="acc-btn" id="acc-doubleflat" onclick="selectAccidental('𝄫')">𝄫 დუბლ-♭</button>
     </div>
 
-    <!-- ნოტები -->
     <div class="notes-grid">
       <button class="note-btn" onclick="submitAnswer('დო')">დო</button>
       <button class="note-btn" onclick="submitAnswer('რე')">რე</button>
@@ -241,6 +347,19 @@
       <button class="note-btn" onclick="submitAnswer('ლა')">ლა</button>
       <button class="note-btn" onclick="submitAnswer('სი')">სი</button>
       <button class="note-btn sound-btn" onclick="playCurrentTone()">♫ მოსმენა</button>
+    </div>
+  </div>
+
+  <!-- თეორიის მოდალური ფანჯარა -->
+  <div class="modal-overlay" id="theory-modal" onclick="closeTheoryModal(event)">
+    <div class="modal-content" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" id="theory-title">სოლფეჯიოს თეორია</div>
+        <button class="close-btn" onclick="closeTheoryModal()">&times;</button>
+      </div>
+      <div class="modal-body" id="theory-body">
+        <!-- დინამიურად ივსება კლასის მიხედვით -->
+      </div>
     </div>
   </div>
 
@@ -268,9 +387,26 @@
       } catch (e) {}
     }
 
+    function playSuccessChime() {
+      try {
+        const ctx = getAudioContext();
+        [523.25, 659.25, 783.99].forEach((freq, idx) => {
+          const osc = ctx.createOscillator();
+          const gain = ctx.createGain();
+          osc.type = 'sine';
+          osc.frequency.setValueAtTime(freq, ctx.currentTime + idx * 0.05);
+          gain.gain.setValueAtTime(0.12, ctx.currentTime + idx * 0.05);
+          gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 0.6);
+          osc.connect(gain);
+          gain.connect(ctx.destination);
+          osc.start(ctx.currentTime + idx * 0.05);
+          osc.stop(ctx.currentTime + 0.6);
+        });
+      } catch (e) {}
+    }
+
     const accidentalSemitones = { '': 0, '♯': 1, '♭': -1, '𝄪': 2, '𝄫': -2 };
 
-    // ვიოლინოს ბაზა (სრული)
     const trebleAll = [
       { name: 'სოლ', baseFreq: 196.00, offset: -5, ledgers: [-4, -2], octave: 'მცირე', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
       { name: 'ლა',  baseFreq: 220.00, offset: -4, ledgers: [-4, -2], octave: 'მცირე', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
@@ -292,7 +428,6 @@
       { name: 'დო',  baseFreq: 1046.5, offset: 12, ledgers: [10, 12], octave: 'III', lineDesc: 'ზედა მე-2 დამატებით ხაზზე', minLevel: 4 }
     ];
 
-    // ბანის ბაზა (სრული)
     const bassAll = [
       { name: 'დო',  baseFreq: 65.41,  offset: -4, ledgers: [-4, -2], octave: 'დიდი', lineDesc: 'ქვედა მე-2 დამატებით ხაზზე', minLevel: 4 },
       { name: 'რე',  baseFreq: 73.42,  offset: -3, ledgers: [-2], octave: 'დიდი', lineDesc: 'ქვედა 1-ელ დამატებით ხაზს ქვემოთ', minLevel: 4 },
@@ -320,20 +455,188 @@
     let selectedAccidental = '';
     let score = 0;
     let attempts = 0;
+    let streak = 0;
 
     const canvas = document.getElementById('staff');
     const ctx = canvas.getContext('2d');
+    const confettiCanvas = document.getElementById('confetti');
+    const confettiCtx = confettiCanvas.getContext('2d');
     const explanationBox = document.getElementById('explanation-box');
     const scoreText = document.getElementById('score-text');
+    const streakNum = document.getElementById('streak-num');
     const accidentalBar = document.getElementById('accidental-bar');
+
+    // თეორიული მონაცემთა ბაზა კლასების მიხედვით
+    const theoryData = {
+      1: {
+        title: "I კლასის თეორიული საფუძვლები",
+        html: `
+          <div class="theory-section">
+            <h4>1. სანოტო სისტემა და ვიოლინოს გასაღები</h4>
+            <div class="theory-box">
+              სანოტო სისტემა შედგება <b>5 ძირითადი ჰორიზონტალური ხაზისგან</b>, რომლებსაც ქვემოდან ზემოთ ვითვლით.<br>
+              <b>ვიოლინოს გასაღები (𝄞):</b> ეწოდება ასევე <i>სოლ-ის გასაღები</i>, რადგან იწყება მეორე ხაზიდან და ამ ხაზზე აფიქსირებს პირველი ოქტავის ნოტა <b>სოლს</b>.
+            </div>
+          </div>
+          <div class="theory-section">
+            <h4>2. I ოქტავის ნოტების განლაგება</h4>
+            <div class="theory-box">
+              • <b>დო:</b> ქვედა პირველ დამატებით ხაზზე.<br>
+              • <b>რე:</b> პირველ ხაზს ქვემოთ.<br>
+              • <b>მი:</b> პირველ ხაზზე.<br>
+              • <b>ფა:</b> პირველ და მეორე ხაზს შორის.<br>
+              • <b>სოლ:</b> მეორე ხაზზე.<br>
+              • <b>ლა:</b> მეორე და მესამე ხაზს შორის.<br>
+              • <b>სი:</b> მესამე (შუა) ხაზზე.
+            </div>
+          </div>
+        `
+      },
+      2: {
+        title: "II – IV კლასის თეორიული კურსი",
+        html: `
+          <div class="theory-section">
+            <h4>1. ბანის გასაღები (𝄢 - F Clef)</h4>
+            <div class="theory-box">
+              ეწოდება <i>ფა-ს გასაღები</i>. მისი წერტილები მეოთხე ხაზს ერტყმის და ამ ხაზზე აფიქსირებს მცირე ოქტავის ნოტა <b>ფას</b>.<br>
+              • პირველ ხაზზე ზის: <b>სოლ</b> (დიდი ოქტავა).<br>
+              • მესამე ხაზზე: <b>რე</b> (მცირე ოქტავა).<br>
+              • ზედა პირველ დამატებით ხაზზე: <b>დო</b> (პირველი ოქტავა).
+            </div>
+          </div>
+          <div class="theory-section">
+            <h4>2. ალტერაციის ძირითადი ნიშნები</h4>
+            <div class="theory-box">
+              • <b>დიეზი (♯):</b> ნოტს ამაღლებს ნახევარი ტონით.<br>
+              • <b>ბემოლი (♭):</b> ნოტს ადაბლებს ნახევარი ტონით.<br>
+              • <b>ბეკარი (♮):</b> აუქმებს დიეზისა და ბემოლის მოქმედებას.
+            </div>
+          </div>
+          <div class="theory-section">
+            <h4>3. ტონი და ნახევარტონი</h4>
+            <div class="theory-box">
+              ფორტეპიანოს კლავიატურაზე ორ მეზობელ კლავიშს შორის უმოკლესი მანძილი არის <b>ნახევარტონი</b> (მაგ: მი-ფა, სი-დო). ორი ნახევარტონი შეადგენს <b>ერთ მთელ ტონს</b>.
+            </div>
+          </div>
+        `
+      },
+      3: {
+        title: "V – VII კლასის თეორიული კურსი",
+        html: `
+          <div class="theory-section">
+            <h4>1. მარტივი ინტერვალები</h4>
+            <div class="theory-box">
+              ინტერვალი არის ორ ბგერას შორის მანძილი. მარტივია ინტერვალები ოქტავის ფარგლებში:<br>
+              • <b>პრიმა (1):</b> 0 ტონი (სუფთა)<br>
+              • <b>სეკუნდა (2):</b> მ2 = 0.5 ტონი, დ2 = 1 ტონი<br>
+              • <b>ტერცია (3):</b> მ3 = 1.5 ტონი, დ3 = 2 ტონი<br>
+              • <b>კვარტა (4):</b> ს4 = 2.5 ტონი, გად.4 (ტრიტონი) = 3 ტონი<br>
+              • <b>კვინტა (5):</b> შემც.5 (ტრიტონი) = 3 ტონი, ს5 = 3.5 ტონი<br>
+              • <b>სექსტა (6):</b> მ6 = 4 ტონი, დ6 = 4.5 ტონი<br>
+              • <b>სეპტიმა (7):</b> მ7 = 5 ტონი, დ7 = 5.5 ტონი<br>
+              • <b>ოქტავა (8):</b> ს8 = 6 ტონი
+            </div>
+          </div>
+          <div class="theory-section">
+            <h4>2. სამხმოვანებები (ტრიადები)</h4>
+            <div class="theory-box">
+              • <b>მაჟორული სამხმოვანება ($M_3^5$):</b> დ3 + მ3 (სუფთა კვინტის ფარგლებში).<br>
+              • <b>მინორული სამხმოვანება ($m_3^5$):</b> მ3 + დ3.<br>
+              • მათი შებრუნებები: <b>სექსტაკორდი</b> (6) და <b>კვარტსექსტაკორდი</b> (4/6).
+            </div>
+          </div>
+        `
+      },
+      4: {
+        title: "საკონსერვატორიო & სააბიტურიენტო თეორია",
+        html: `
+          <div class="theory-section">
+            <h4>1. რთული ალტერაცია და ენჰარმონიზმი</h4>
+            <div class="theory-box">
+              • <b>დუბლ-დიეზი (𝄪):</b> ნოტს ამაღლებს 1 მთელი ტონით (2 ნახევარტონით).<br>
+              • <b>დუბლ-ბემოლი (𝄫):</b> ნოტს ადაბლებს 1 მთელი ტონით.<br>
+              • <b>ენჰარმონიზმი:</b> ბგერების თანაბარი ჟღერადობა სხვადასხვა სახელწოდებითა და ჩაწერით (მაგ: ფა𝄪 = სოლ♮; დო♯ = რე♭).
+            </div>
+          </div>
+          <div class="theory-section">
+            <h4>2. სეპტაკორდები და მათი შებრუნებები</h4>
+            <div class="theory-box">
+              <b>დომინანტსეპტაკორდი ($D_7$):</b> აგებულია V საფეხურზე (მაჟორული სამხმოვანება + მცირე ტერცია).<br>
+              შებრუნებები:<br>
+              • <b>კვინტსექსტაკორდი ($D_{65}$):</b> გადადის ტონიკურ სამხმოვანებაში გაორკეცებული ტონიკით.<br>
+              • <b>ტერცკვარტაკორდი ($D_{43}$):</b> გადადის სრულ ტონიკურ სამხმოვანებაში.<br>
+              • <b>სეკუნდაკორდი ($D_2$):</b> გადადის ტონიკურ სექსტაკორდში.
+            </div>
+          </div>
+          <div class="theory-section">
+            <h4>3. ხალხური და ძველი კილოები</h4>
+            <div class="theory-box">
+              იონიური (მაჟორი), ეოლიური (ნატურალური მინორი), დორიული (მინორი VI მაღალით), ფრიგიული (მინორი II დაბალით), ლიდიური (მაჟორი IV მაღალით), მიქსოლიდიური (მაჟორი VII დაბალით).
+            </div>
+          </div>
+        `
+      }
+    };
+
+    function openTheoryModal() {
+      const data = theoryData[currentLevel] || theoryData[4];
+      document.getElementById('theory-title').textContent = data.title;
+      document.getElementById('theory-body').innerHTML = data.html;
+      document.getElementById('theory-modal').style.display = 'flex';
+    }
+
+    function closeTheoryModal(e) {
+      document.getElementById('theory-modal').style.display = 'none';
+    }
+
+    let particles = [];
+    function launchSparks() {
+      particles = [];
+      const colors = ['#f59e0b', '#fbbf24', '#d97706', '#1e3a8a'];
+      for (let i = 0; i < 35; i++) {
+        particles.push({
+          x: confettiCanvas.width / 2,
+          y: confettiCanvas.height / 2,
+          vx: (Math.random() - 0.5) * 8,
+          vy: (Math.random() - 0.5) * 8 - 2,
+          size: Math.random() * 4 + 2,
+          color: colors[Math.floor(Math.random() * colors.length)],
+          alpha: 1
+        });
+      }
+      renderConfetti();
+    }
+
+    function renderConfetti() {
+      confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+      let active = false;
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.15;
+        p.alpha -= 0.025;
+        if (p.alpha > 0) {
+          active = true;
+          confettiCtx.save();
+          confettiCtx.globalAlpha = p.alpha;
+          confettiCtx.fillStyle = p.color;
+          confettiCtx.beginPath();
+          confettiCtx.arc(p.x, p.y, p.size, 0, 2 * Math.PI);
+          confettiCtx.fill();
+          confettiCtx.restore();
+        }
+      });
+      if (active) requestAnimationFrame(renderConfetti);
+      else confettiCtx.clearRect(0, 0, confettiCanvas.width, confettiCanvas.height);
+    }
 
     function onLevelChange(levelStr) {
       currentLevel = parseInt(levelStr);
       score = 0;
       attempts = 0;
-      scoreText.textContent = `ქულა: 0 / 0`;
+      streak = 0;
+      updateUI();
 
-      // დონე 1: მხოლოდ ვიოლინო, ალტერაციის ზოლი იმალება
       if (currentLevel === 1) {
         accidentalBar.style.display = 'none';
         setClefMode('treble');
@@ -341,7 +644,6 @@
       } else {
         accidentalBar.style.display = 'flex';
         document.getElementById('clef-selector-box').style.display = 'flex';
-        // ნიშნების ღილაკების მორგება
         document.getElementById('acc-doublesharp').style.display = (currentLevel === 4) ? 'block' : 'none';
         document.getElementById('acc-doubleflat').style.display = (currentLevel === 4) ? 'block' : 'none';
       }
@@ -461,26 +763,19 @@
         activeClef = currentClefMode;
       }
 
-      // მიმდინარე დონისთვის ხელმისაწვდომი ნოტების გაფილტვრა
       const poolRaw = activeClef === 'treble' ? trebleAll : bassAll;
       const pool = poolRaw.filter(n => n.minLevel <= currentLevel);
       const noteBase = pool[Math.floor(Math.random() * pool.length)];
 
-      // ალტერაციის ნიშნების გაფილტვრა დონის მიხედვით
       let acc = '';
       if (currentLevel === 1) {
         acc = '';
       } else if (currentLevel === 2) {
-        const hasAcc = Math.random() > 0.6;
-        acc = hasAcc ? (Math.random() > 0.5 ? '♯' : '♭') : '';
+        acc = Math.random() > 0.6 ? (Math.random() > 0.5 ? '♯' : '♭') : '';
       } else if (currentLevel === 3) {
-        const hasAcc = Math.random() > 0.5;
-        acc = hasAcc ? ['♯', '♭'][Math.floor(Math.random() * 2)] : '';
+        acc = Math.random() > 0.5 ? ['♯', '♭'][Math.floor(Math.random() * 2)] : '';
       } else {
-        // დონე 4: სრული ნიშნები დუბლ-ალტერაციით
-        const hasAcc = Math.random() > 0.45;
-        const fullAccs = ['♯', '♭', '𝄪', '𝄫'];
-        acc = hasAcc ? fullAccs[Math.floor(Math.random() * fullAccs.length)] : '';
+        acc = Math.random() > 0.45 ? ['♯', '♭', '𝄪', '𝄫'][Math.floor(Math.random() * 4)] : '';
       }
 
       currentQuestion = {
@@ -501,6 +796,11 @@
       return '';
     }
 
+    function updateUI() {
+      scoreText.textContent = `${score} / ${attempts}`;
+      streakNum.textContent = streak;
+    }
+
     function submitAnswer(noteName) {
       if (!currentQuestion) return;
       attempts++;
@@ -515,20 +815,31 @@
 
       if (isCorrect) {
         score++;
-        explanationBox.style.background = '#dcfce7';
-        explanationBox.style.border = '1px solid #86efac';
+        streak++;
+        updateUI();
+
+        if (streak % 10 === 0) {
+          playSuccessChime();
+          launchSparks();
+        }
+
+        explanationBox.style.background = '#f0fdf4';
+        explanationBox.style.borderColor = '#86efac';
         explanationBox.innerHTML = `
-          <div class="status-line" style="color: #15803d;">✓ სწორია! — ${fullCorrectName}</div>
-          <div style="color: #166534; font-size: 0.88rem;">${clefTitle}: ${currentQuestion.lineDesc} (${currentQuestion.octave} ოქტავა).</div>
+          <div class="status-line" style="color: #166534;">✓ სწორია! — ${fullCorrectName}</div>
+          <div style="color: #15803d; font-size: 0.85rem;">${clefTitle}: ${currentQuestion.lineDesc} (${currentQuestion.octave} ოქტავა).</div>
         `;
-        setTimeout(nextQuestion, 700);
+        setTimeout(nextQuestion, 650);
       } else {
-        explanationBox.style.background = '#fee2e2';
-        explanationBox.style.border = '1px solid #fca5a5';
+        streak = 0;
+        updateUI();
+
+        explanationBox.style.background = '#fef2f2';
+        explanationBox.style.borderColor = '#fca5a5';
         
         let hintDetail = '';
         if (userNote !== currentQuestion.name) {
-          hintDetail += `ნოტა შეგეშალათ (თქვენ აირჩიეთ: ${userNote}). `;
+          hintDetail += `ნოტა შეგეშალათ (აირჩიეთ: ${userNote}). `;
         }
         if (currentLevel > 1 && userAcc !== currentQuestion.accidental) {
           const userAccName = getAccidentalName(userAcc) || 'სუფთა (♮)';
@@ -537,17 +848,14 @@
         }
 
         explanationBox.innerHTML = `
-          <div class="status-line" style="color: #b91c1c;">✗ შეცდომაა! სწორია: ${fullCorrectName}</div>
-          <div style="color: #991b1b; font-size: 0.88rem;">
+          <div class="status-line" style="color: #991b1b;">✗ შეცდომაა! სწორია: ${fullCorrectName}</div>
+          <div style="color: #b91c1c; font-size: 0.85rem;">
             <b>აკადემიური წესი:</b> ${clefTitle}-ში ${currentQuestion.lineDesc} მდებარეობს <b>${currentQuestion.name}</b> (${currentQuestion.octave} ოქტავა). ${hintDetail}
           </div>
         `;
       }
-
-      scoreText.textContent = `ქულა: ${score} / ${attempts}`;
     }
 
-    // ინიციალიზაცია
     onLevelChange(document.getElementById('level-select').value);
   </script>
 </body>
