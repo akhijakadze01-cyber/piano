@@ -3,16 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-  <title>ნოტების კითხვა • სოლფეჯიო</title>
+  <title>სოლფეჯიო • კონსერვატორიის ტრენაჟორი</title>
   <style>
-    * {
-      box-sizing: border-box;
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-    }
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; user-select: none; }
     body {
       margin: 0;
-      padding: 16px;
+      padding: 12px;
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
       background-color: #f8fafc;
       color: #0f172a;
@@ -23,46 +19,74 @@
     }
     .header {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 12px;
+      margin-bottom: 8px;
     }
     .title {
-      font-size: 1.15rem;
+      font-size: 1.1rem;
       font-weight: 800;
       color: #1e3a8a;
     }
     .badge {
       background: #1e3a8a;
       color: white;
-      padding: 6px 14px;
+      padding: 5px 12px;
       border-radius: 20px;
-      font-size: 0.95rem;
+      font-size: 0.9rem;
       font-weight: bold;
     }
+
+    /* გასაღებების ასარჩევი ღილაკები */
+    .clef-selector {
+      width: 100%;
+      max-width: 500px;
+      display: flex;
+      gap: 6px;
+      margin-bottom: 10px;
+    }
+    .clef-btn {
+      flex: 1;
+      padding: 8px 4px;
+      font-size: 0.95rem;
+      font-weight: bold;
+      border: 2px solid #cbd5e1;
+      background: white;
+      color: #334155;
+      border-radius: 10px;
+      cursor: pointer;
+      box-shadow: none;
+      transition: all 0.15s;
+    }
+    .clef-btn.active {
+      background: #1e3a8a;
+      color: white;
+      border-color: #1e3a8a;
+    }
+
     .staff-container {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       background: #ffffff;
       border: 2px solid #e2e8f0;
-      border-radius: 20px;
-      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      border-radius: 18px;
+      box-shadow: 0 4px 14px rgba(0,0,0,0.06);
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 15px 10px;
+      padding: 10px;
     }
     canvas {
       width: 100%;
-      max-width: 440px;
-      height: 220px;
+      max-width: 480px;
+      height: 250px;
     }
     #feedback {
-      height: 40px;
-      margin: 12px 0;
-      font-size: 1.25rem;
+      height: 38px;
+      margin: 8px 0;
+      font-size: 1.2rem;
       font-weight: bold;
       display: flex;
       align-items: center;
@@ -71,32 +95,39 @@
     }
     .grid {
       width: 100%;
-      max-width: 480px;
+      max-width: 500px;
       display: grid;
       grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
+      gap: 10px;
     }
-    button {
+    .note-btn {
       background: #1e3a8a;
       color: white;
       border: none;
-      padding: 16px 0;
+      padding: 15px 0;
       font-size: 1.2rem;
       font-weight: bold;
-      border-radius: 14px;
+      border-radius: 12px;
       cursor: pointer;
-      box-shadow: 0 4px 6px rgba(30, 58, 138, 0.2);
+      box-shadow: 0 3px 6px rgba(30, 58, 138, 0.2);
       transition: transform 0.08s, background-color 0.15s;
     }
-    button:active {
+    .note-btn:active {
       transform: scale(0.95);
       background-color: #172554;
     }
-    button.sound-btn {
+    .sound-btn {
       background: #ea580c;
-      box-shadow: 0 4px 6px rgba(234, 88, 12, 0.2);
+      color: white;
+      border: none;
+      padding: 15px 0;
+      font-size: 1.05rem;
+      font-weight: bold;
+      border-radius: 12px;
+      cursor: pointer;
+      box-shadow: 0 3px 6px rgba(234, 88, 12, 0.2);
     }
-    button.sound-btn:active {
+    .sound-btn:active {
       background: #c2410c;
     }
   </style>
@@ -104,38 +135,39 @@
 <body>
 
   <div class="header">
-    <div class="title">სოლფეჯიო • ტრენაჟორი</div>
+    <div class="title">სოლფეჯიო • აკადემიური</div>
     <div class="badge" id="score-text">ქულა: 0 / 0</div>
   </div>
 
+  <!-- გასაღების არჩევა -->
+  <div class="clef-selector">
+    <button class="clef-btn active" id="btn-treble" onclick="setClefMode('treble')">𝄞 ვიოლინო</button>
+    <button class="clef-btn" id="btn-bass" onclick="setClefMode('bass')">𝄢 ბანი</button>
+    <button class="clef-btn" id="btn-mixed" onclick="setClefMode('mixed')">𝄢 + 𝄞 შერეული</button>
+  </div>
+
   <div class="staff-container">
-    <canvas id="staff" width="880" height="440"></canvas>
+    <canvas id="staff" width="960" height="500"></canvas>
   </div>
 
   <div id="feedback"></div>
 
   <div class="grid">
-    <button onclick="handleAnswer('დო')">დო</button>
-    <button onclick="handleAnswer('რე')">რე</button>
-    <button onclick="handleAnswer('მი')">მი</button>
-    <button onclick="handleAnswer('ფა')">ფა</button>
-    <button onclick="handleAnswer('სოლ')">სოლ</button>
-    <button onclick="handleAnswer('ლა')">ლა</button>
-    <button onclick="handleAnswer('სი')">სი</button>
+    <button class="note-btn" onclick="handleAnswer('დო')">დო</button>
+    <button class="note-btn" onclick="handleAnswer('რე')">რე</button>
+    <button class="note-btn" onclick="handleAnswer('მი')">მი</button>
+    <button class="note-btn" onclick="handleAnswer('ფა')">ფა</button>
+    <button class="note-btn" onclick="handleAnswer('სოლ')">სოლ</button>
+    <button class="note-btn" onclick="handleAnswer('ლა')">ლა</button>
+    <button class="note-btn" onclick="handleAnswer('სი')">სი</button>
     <button class="sound-btn" onclick="playCurrentTone()">♫ მოსმენა</button>
   </div>
 
   <script>
-    // Web Audio API ფორტეპიანოს სუფთა ჟღერადობისთვის (ინტერნეტის ჩამოტვირთვის გარეშეც რომ იმუშაოს)
     let audioCtx = null;
-
     function getAudioContext() {
-      if (!audioCtx) {
-        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-      }
-      if (audioCtx.state === 'suspended') {
-        audioCtx.resume();
-      }
+      if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
       return audioCtx;
     }
 
@@ -144,35 +176,64 @@
         const ctx = getAudioContext();
         const osc = ctx.createOscillator();
         const gain = ctx.createGain();
-
-        osc.type = 'triangle'; // რბილი, სასიამოვნო ტემბრი
+        osc.type = 'triangle';
         osc.frequency.setValueAtTime(freq, ctx.currentTime);
-
-        gain.gain.setValueAtTime(0.4, ctx.currentTime);
+        gain.gain.setValueAtTime(0.35, ctx.currentTime);
         gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
-
         osc.connect(gain);
         gain.connect(ctx.destination);
-
         osc.start();
         osc.stop(ctx.currentTime + 1.2);
-      } catch (e) {
-        console.error(e);
-      }
+      } catch (e) {}
     }
 
-    // პირველი ოქტავის ნოტები და მათი სიხშირეები (Hz)
-    const notesData = [
-      { name: 'დო', freq: 261.63, offset: -2, ledger: true },   // C4
-      { name: 'რე', freq: 293.66, offset: -1, ledger: false },  // D4
-      { name: 'მი', freq: 329.63, offset: 0,  ledger: false },  // E4
-      { name: 'ფა', freq: 349.23, offset: 1,  ledger: false },  // F4
-      { name: 'სოლ', freq: 392.00, offset: 2, ledger: false },  // G4
-      { name: 'ლა', freq: 440.00, offset: 3,  ledger: false },  // A4
-      { name: 'სი', freq: 493.88, offset: 4,  ledger: false },  // B4
-      { name: 'დო', freq: 523.25, offset: 5,  ledger: false }   // C5
+    // ვიოლინოს გასაღების ბაზა (მცირე ოქტავიდან მეორე ოქტავამდე დამატებითი ხაზებით)
+    // 0 = პირველი ძირითადი ხაზი (მი - E4)
+    const trebleNotes = [
+      { name: 'სოლ', freq: 196.00, offset: -5, ledgers: [-4, -2] }, // მცირე ოქტავა (2 დამატებითი ხაზი ქვემოთ)
+      { name: 'ლა',  freq: 220.00, offset: -4, ledgers: [-4, -2] },
+      { name: 'სი',  freq: 246.94, offset: -3, ledgers: [-2] },
+      { name: 'დო',  freq: 261.63, offset: -2, ledgers: [-2] }, // 1 დამატებითი ხაზი ქვემოთ
+      { name: 'რე',  freq: 293.66, offset: -1, ledgers: [] },
+      { name: 'მი',  freq: 329.63, offset: 0,  ledgers: [] }, // 1-ლი ხაზი
+      { name: 'ფა',  freq: 349.23, offset: 1,  ledgers: [] },
+      { name: 'სოლ', freq: 392.00, offset: 2,  ledgers: [] }, // მე-2 ხაზი
+      { name: 'ლა',  freq: 440.00, offset: 3,  ledgers: [] },
+      { name: 'სი',  freq: 493.88, offset: 4,  ledgers: [] }, // მე-3 ხაზი
+      { name: 'დო',  freq: 523.25, offset: 5,  ledgers: [] },
+      { name: 'რე',  freq: 587.33, offset: 6,  ledgers: [] },
+      { name: 'მი',  freq: 659.25, offset: 7,  ledgers: [] },
+      { name: 'ფა',  freq: 698.46, offset: 8,  ledgers: [] }, // მე-5 ხაზი
+      { name: 'სოლ', freq: 783.99, offset: 9,  ledgers: [] },
+      { name: 'ლა',  freq: 880.00, offset: 10, ledgers: [10] }, // 1 დამატებითი ხაზი ზემოთ
+      { name: 'სი',  freq: 987.77, offset: 11, ledgers: [10] },
+      { name: 'დო',  freq: 1046.5, offset: 12, ledgers: [10, 12] } // 2 დამატებითი ხაზი ზემოთ
     ];
 
+    // ბანის გასაღების ბაზა (F clef)
+    // 0 = პირველი ძირითადი ხაზი (სოლ - G2)
+    const bassNotes = [
+      { name: 'დო',  freq: 65.41,  offset: -4, ledgers: [-4, -2] }, // დიდი ოქტავა (2 დამატებითი ხაზი ქვემოთ)
+      { name: 'რე',  freq: 73.42,  offset: -3, ledgers: [-2] },
+      { name: 'მი',  freq: 82.41,  offset: -2, ledgers: [-2] }, // 1 დამატებითი ხაზი ქვემოთ
+      { name: 'ფა',  freq: 87.31,  offset: -1, ledgers: [] },
+      { name: 'სოლ', freq: 98.00,  offset: 0,  ledgers: [] }, // 1-ლი ხაზი
+      { name: 'ლა',  freq: 110.00, offset: 1,  ledgers: [] },
+      { name: 'სი',  freq: 123.47, offset: 2,  ledgers: [] },
+      { name: 'დო',  freq: 130.81, offset: 3,  ledgers: [] }, // მცირე ოქტავა
+      { name: 'რე',  freq: 146.83, offset: 4,  ledgers: [] },
+      { name: 'მი',  freq: 164.81, offset: 5,  ledgers: [] },
+      { name: 'ფა',  freq: 174.61, offset: 6,  ledgers: [] }, // მე-4 ხაზი (F3)
+      { name: 'სოლ', freq: 196.00, offset: 7,  ledgers: [] },
+      { name: 'ლა',  freq: 220.00, offset: 8,  ledgers: [] }, // მე-5 ხაზი (A3)
+      { name: 'სი',  freq: 246.94, offset: 9,  ledgers: [] },
+      { name: 'დო',  freq: 261.63, offset: 10, ledgers: [10] }, // 1-ლი ოქტავის დო (1 დამატებითი ხაზი ზემოთ)
+      { name: 'რე',  freq: 293.66, offset: 11, ledgers: [10] },
+      { name: 'მი',  freq: 329.63, offset: 12, ledgers: [10, 12] } // 2 დამატებითი ხაზი ზემოთ
+    ];
+
+    let currentClefMode = 'treble'; // 'treble' | 'bass' | 'mixed'
+    let activeClef = 'treble';
     let currentNote = null;
     let score = 0;
     let attempts = 0;
@@ -182,81 +243,103 @@
     const feedback = document.getElementById('feedback');
     const scoreText = document.getElementById('score-text');
 
-    function playCurrentTone() {
-      if (currentNote) {
-        playSynthTone(currentNote.freq);
-      }
+    function setClefMode(mode) {
+      currentClefMode = mode;
+      document.getElementById('btn-treble').classList.toggle('active', mode === 'treble');
+      document.getElementById('btn-bass').classList.toggle('active', mode === 'bass');
+      document.getElementById('btn-mixed').classList.toggle('active', mode === 'mixed');
+      nextQuestion();
     }
 
-    function drawTrebleClef(ctx, x, y) {
+    function playCurrentTone() {
+      if (currentNote) playSynthTone(currentNote.freq);
+    }
+
+    function drawClef(clefType, centerY, spacing) {
       ctx.save();
       ctx.fillStyle = '#0f172a';
-      ctx.font = '140px serif';
-      ctx.fillText('𝄞', x, y);
+      if (clefType === 'treble') {
+        ctx.font = '150px serif';
+        ctx.fillText('𝄞', 50, centerY + 58);
+      } else {
+        ctx.font = '125px serif';
+        ctx.fillText('𝄢', 50, centerY + 25);
+      }
       ctx.restore();
     }
 
     function render() {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
       const centerY = canvas.height / 2;
-      const spacing = 32;
+      const spacing = 36;
 
-      // 5 ხაზი
-      ctx.lineWidth = 3;
+      // 5 ძირითადი ხაზი
+      ctx.lineWidth = 3.5;
       ctx.strokeStyle = '#334155';
       for (let i = -2; i <= 2; i++) {
         let y = centerY - (i * spacing);
         ctx.beginPath();
-        ctx.moveTo(30, y);
-        ctx.lineTo(canvas.width - 30, y);
+        ctx.moveTo(35, y);
+        ctx.lineTo(canvas.width - 35, y);
         ctx.stroke();
       }
 
-      // ვიოლინოს გასაღები
-      drawTrebleClef(ctx, 45, centerY + 52);
+      // გასაღების დახატვა
+      drawClef(activeClef, centerY, spacing);
 
       if (!currentNote) return;
 
-      const noteX = canvas.width / 2 + 50;
-      const baseE4Y = centerY + (2 * spacing);
-      const noteY = baseE4Y - (currentNote.offset * (spacing / 2));
+      const noteX = canvas.width / 2 + 60;
+      const baseLine1Y = centerY + (2 * spacing); // 1-ლი ქვედა ხაზი
+      const noteY = baseLine1Y - (currentNote.offset * (spacing / 2));
 
-      // დამატებითი ხაზი (C4 / ქვედა დო)
-      if (currentNote.ledger) {
+      // დამატებითი ხაზები (Ledger lines)
+      if (currentNote.ledgers && currentNote.ledgers.length > 0) {
         ctx.lineWidth = 4;
-        ctx.beginPath();
-        ctx.moveTo(noteX - 35, noteY);
-        ctx.lineTo(noteX + 35, noteY);
-        ctx.stroke();
+        ctx.strokeStyle = '#334155';
+        currentNote.ledgers.forEach(lOffset => {
+          let ly = baseLine1Y - (lOffset * (spacing / 2));
+          ctx.beginPath();
+          ctx.moveTo(noteX - 42, ly);
+          ctx.lineTo(noteX + 42, ly);
+          ctx.stroke();
+        });
       }
 
-      // ნოტის თავაკი (ოვალური დახრილი)
+      // ნოტის თავაკი (დახრილი ოვალური)
       ctx.save();
       ctx.translate(noteX, noteY);
       ctx.rotate(-0.35);
       ctx.fillStyle = '#1e3a8a';
       ctx.beginPath();
-      ctx.ellipse(0, 0, 26, 18, 0, 0, 2 * Math.PI);
+      ctx.ellipse(0, 0, 28, 20, 0, 0, 2 * Math.PI);
       ctx.fill();
       ctx.restore();
 
-      // ნოტის ჯოხი
-      ctx.lineWidth = 3.5;
+      // ნოტის ჯოხი (შუა მე-3 ხაზს ქვემოთ ზევით მიდის, ზემოთ - ქვევით)
+      ctx.lineWidth = 4;
       ctx.strokeStyle = '#1e3a8a';
       ctx.beginPath();
       if (currentNote.offset < 4) {
-        ctx.moveTo(noteX + 22, noteY);
-        ctx.lineTo(noteX + 22, noteY - 100);
+        ctx.moveTo(noteX + 24, noteY);
+        ctx.lineTo(noteX + 24, noteY - 110);
       } else {
-        ctx.moveTo(noteX - 22, noteY);
-        ctx.lineTo(noteX - 22, noteY + 100);
+        ctx.moveTo(noteX - 24, noteY);
+        ctx.lineTo(noteX - 24, noteY + 110);
       }
       ctx.stroke();
     }
 
     function nextQuestion() {
-      const idx = Math.floor(Math.random() * notesData.length);
-      currentNote = notesData[idx];
+      if (currentClefMode === 'mixed') {
+        activeClef = Math.random() > 0.5 ? 'treble' : 'bass';
+      } else {
+        activeClef = currentClefMode;
+      }
+
+      const pool = activeClef === 'treble' ? trebleNotes : bassNotes;
+      const idx = Math.floor(Math.random() * pool.length);
+      currentNote = pool[idx];
       feedback.textContent = '';
       render();
     }
@@ -270,15 +353,16 @@
         score++;
         feedback.style.color = '#16a34a';
         feedback.textContent = 'სწორია! (+1)';
-        setTimeout(nextQuestion, 550);
+        setTimeout(nextQuestion, 500);
       } else {
         feedback.style.color = '#dc2626';
-        feedback.textContent = `შეცდომაა! ეს არის: ${currentNote.name}`;
+        const clefName = activeClef === 'treble' ? 'ვიოლინო' : 'ბანი';
+        feedback.textContent = `შეცდომაა! [${clefName}] ეს არის: ${currentNote.name}`;
       }
       scoreText.textContent = `ქულა: ${score} / ${attempts}`;
     }
 
-    // პირველი გაშვება
+    // სტარტი
     nextQuestion();
   </script>
 </body>
