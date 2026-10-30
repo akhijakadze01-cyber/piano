@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="ka">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>ნოტების კითხვა • სოლფეჯიო</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      -webkit-tap-highlight-color: transparent;
+      user-select: none;
+    }
+    body {
+      margin: 0;
+      padding: 16px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: #f8fafc;
+      color: #0f172a;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .header {
+      width: 100%;
+      max-width: 480px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+    .title {
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: #1e3a8a;
+    }
+    .badge {
+      background: #1e3a8a;
+      color: white;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.95rem;
+      font-weight: bold;
+    }
+    .staff-container {
+      width: 100%;
+      max-width: 480px;
+      background: #ffffff;
+      border: 2px solid #e2e8f0;
+      border-radius: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 15px 10px;
+    }
+    canvas {
+      width: 100%;
+      max-width: 440px;
+      height: 220px;
+    }
+    #feedback {
+      height: 40px;
+      margin: 12px 0;
+      font-size: 1.25rem;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+    }
+    .grid {
+      width: 100%;
+      max-width: 480px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+    button {
+      background: #1e3a8a;
+      color: white;
+      border: none;
+      padding: 16px 0;
+      font-size: 1.2rem;
+      font-weight: bold;
+      border-radius: 14px;
+      cursor: pointer;
+      box-shadow: 0 4px 6px rgba(30, 58, 138, 0.2);
+      transition: transform 0.08s, background-color 0.15s;
+    }
+    button:active {
+      transform: scale(0.95);
+      background-color: #172554;
+    }
+    button.sound-btn {
+      background: #ea580c;
+      box-shadow: 0 4px 6px rgba(234, 88, 12, 0.2);
+    }
+    button.sound-btn:active {
+      background: #c2410c;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="title">სოლფეჯიო • ტრენაჟორი</div>
+    <div class="badge" id="score-text">ქულა: 0 / 0</div>
+  </div>
+
+  <div class="staff-container">
+    <canvas id="staff" width="880" height="440"></canvas>
+  </div>
+
+  <div id="feedback"></div>
+
+  <div class="grid">
+    <button onclick="handleAnswer('დო')">დო</button>
+    <button onclick="handleAnswer('რე')">რე</button>
+    <button onclick="handleAnswer('მი')">მი</button>
+    <button onclick="handleAnswer('ფა')">ფა</button>
+    <button onclick="handleAnswer('სოლ')">სოლ</button>
+    <button onclick="handleAnswer('ლა')">ლა</button>
+    <button onclick="handleAnswer('სი')">სი</button>
+    <button class="sound-btn" onclick="playCurrentTone()">♫ მოსმენა</button>
+  </div>
+
+  <script>
+    // Web Audio API ფორტეპიანოს სუფთა ჟღერადობისთვის (ინტერნეტის ჩამოტვირთვის გარეშეც რომ იმუშაოს)
+    let audioCtx = null;
+
+    function getAudioContext() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      return audioCtx;
+    }
+
+    function playSynthTone(freq) {
+      try {
+        const ctx = getAudioContext();
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+
+        osc.type = 'triangle'; // რბილი, სასიამოვნო ტემბრი
+        osc.frequency.setValueAtTime(freq, ctx.currentTime);
+
+        gain.gain.setValueAtTime(0.4, ctx.currentTime);
+        gain.gain.exponentialRampToValueAtTime(0.0001, ctx.currentTime + 1.2);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+
+        osc.start();
+        osc.stop(ctx.currentTime + 1.2);
+      } catch (e) {
+        console.error(e);
+      }
+    }
+
+    // პირველი ოქტავის ნოტები და მათი სიხშირეები (Hz)
+    const notesData = [
+      { name: 'დო', freq: 261.63, offset: -2, ledger: true },   // C4
+      { name: 'რე', freq: 293.66, offset: -1, ledger: false },  // D4
+      { name: 'მი', freq: 329.63, offset: 0,  ledger: false },  // E4
+      { name: 'ფა', freq: 349.23, offset: 1,  ledger: false },  // F4
+      { name: 'სოლ', freq: 392.00, offset: 2, ledger: false },  // G4
+      { name: 'ლა', freq: 440.00, offset: 3,  ledger: false },  // A4
+      { name: 'სი', freq: 493.88, offset: 4,  ledger: false },  // B4
+      { name: 'დო', freq: 523.25, offset: 5,  ledger: false }   // C5
+    ];
+
+    let currentNote = null;
+    let score = 0;
+    let attempts = 0;
+
+    const canvas = document.getElementById('staff');
+    const ctx = canvas.getContext('2d');
+    const feedback = document.getElementById('feedback');
+    const scoreText = document.getElementById('score-text');
+
+    function playCurrentTone() {
+      if (currentNote) {
+        playSynthTone(currentNote.freq);
+      }
+    }
+
+    function drawTrebleClef(ctx, x, y) {
+      ctx.save();
+      ctx.fillStyle = '#0f172a';
+      ctx.font = '140px serif';
+      ctx.fillText('𝄞', x, y);
+      ctx.restore();
+    }
+
+    function render() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const centerY = canvas.height / 2;
+      const spacing = 32;
+
+      // 5 ხაზი
+      ctx.lineWidth = 3;
+      ctx.strokeStyle = '#334155';
+      for (let i = -2; i <= 2; i++) {
+        let y = centerY - (i * spacing);
+        ctx.beginPath();
+        ctx.moveTo(30, y);
+        ctx.lineTo(canvas.width - 30, y);
+        ctx.stroke();
+      }
+
+      // ვიოლინოს გასაღები
+      drawTrebleClef(ctx, 45, centerY + 52);
+
+      if (!currentNote) return;
+
+      const noteX = canvas.width / 2 + 50;
+      const baseE4Y = centerY + (2 * spacing);
+      const noteY = baseE4Y - (currentNote.offset * (spacing / 2));
+
+      // დამატებითი ხაზი (C4 / ქვედა დო)
+      if (currentNote.ledger) {
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(noteX - 35, noteY);
+        ctx.lineTo(noteX + 35, noteY);
+        ctx.stroke();
+      }
+
+      // ნოტის თავაკი (ოვალური დახრილი)
+      ctx.save();
+      ctx.translate(noteX, noteY);
+      ctx.rotate(-0.35);
+      ctx.fillStyle = '#1e3a8a';
+      ctx.beginPath();
+      ctx.ellipse(0, 0, 26, 18, 0, 0, 2 * Math.PI);
+      ctx.fill();
+      ctx.restore();
+
+      // ნოტის ჯოხი
+      ctx.lineWidth = 3.5;
+      ctx.strokeStyle = '#1e3a8a';
+      ctx.beginPath();
+      if (currentNote.offset < 4) {
+        ctx.moveTo(noteX + 22, noteY);
+        ctx.lineTo(noteX + 22, noteY - 100);
+      } else {
+        ctx.moveTo(noteX - 22, noteY);
+        ctx.lineTo(noteX - 22, noteY + 100);
+      }
+      ctx.stroke();
+    }
+
+    function nextQuestion() {
+      const idx = Math.floor(Math.random() * notesData.length);
+      currentNote = notesData[idx];
+      feedback.textContent = '';
+      render();
+    }
+
+    function handleAnswer(answer) {
+      if (!currentNote) return;
+      attempts++;
+      playCurrentTone();
+
+      if (answer === currentNote.name) {
+        score++;
+        feedback.style.color = '#16a34a';
+        feedback.textContent = 'სწორია! (+1)';
+        setTimeout(nextQuestion, 550);
+      } else {
+        feedback.style.color = '#dc2626';
+        feedback.textContent = `შეცდომაა! ეს არის: ${currentNote.name}`;
+      }
+      scoreText.textContent = `ქულა: ${score} / ${attempts}`;
+    }
+
+    // პირველი გაშვება
+    nextQuestion();
+  </script>
+</body>
+</html>
